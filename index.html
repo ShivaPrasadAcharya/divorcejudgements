@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>सम्बन्धविच्छेद फैसला सङ्कलन</title>
+<title>अबण्डा जग्गा फैसला सङ्कलन</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -31,7 +31,7 @@
     background: #2c1f0e;
     background-image: radial-gradient(ellipse at 20% 0%, #3d2a10 0%, transparent 60%),
                       radial-gradient(ellipse at 80% 100%, #1a0f05 0%, transparent 60%);
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
     color: var(--ink);
     display: flex; flex-direction: column;
   }
@@ -180,16 +180,96 @@
     color: var(--red-seal); text-transform: uppercase; letter-spacing: 0.07em; flex: 1;
   }
 
+
+
+  /* KW keyword hover controls */
+  .kw-toggle-label {
+    display: flex; align-items: center; gap: 0.25rem;
+    height: 28px; padding: 0 0.42rem; flex-shrink: 0;
+    background: rgba(184,134,42,0.10); border: 1px solid rgba(184,134,42,0.35);
+    border-radius: 3px; color: var(--red-seal); cursor: pointer;
+    font-size: 0.64rem; font-weight: 800; line-height: 1; user-select: none;
+    transition: all 0.18s;
+  }
+  .kw-toggle-label:hover { background: rgba(184,134,42,0.18); border-color: var(--gold); }
+  .kw-toggle-label input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 13px; height: 13px; flex-shrink: 0;
+    border: 1.5px solid rgba(139,26,26,0.35); border-radius: 2px;
+    background: #fff; cursor: pointer; position: relative;
+  }
+  .kw-toggle-label input[type="checkbox"]:checked { background: var(--red-seal); border-color: var(--red-seal); }
+  .kw-toggle-label input[type="checkbox"]:checked::after {
+    content: '✓'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -54%); color: #fff; font-size: 8px; font-weight: 900; line-height: 1;
+  }
+  .kw-hover-target { position: relative; }
+  .kw-floating-tip {
+    position: fixed; z-index: 10001; max-width: min(420px, calc(100vw - 24px));
+    background: #1e1408; color: var(--gold-pale); border: 1px solid var(--gold);
+    border-radius: 5px; box-shadow: 0 8px 26px rgba(0,0,0,0.55);
+    padding: 0.55rem 0.7rem; font-size: 0.72rem; line-height: 1.55;
+    pointer-events: none; opacity: 0; transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease; white-space: normal;
+  }
+  .kw-floating-tip.show { opacity: 1; transform: translateY(0); }
+  .kw-floating-tip .kw-tip-title {
+    display:block; font-size:0.62rem; color:rgba(240,216,150,0.6);
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.18rem; font-weight:700;
+  }
+  .card-keyword-btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 28px; height: 28px; flex-shrink:0;
+    background: rgba(184,134,42,0.10); border: 1px solid rgba(184,134,42,0.35);
+    border-radius: 50%; color: var(--red-seal); cursor: help;
+    font-size: 0.86rem; transition: all 0.16s; align-self: flex-start;
+  }
+  .card-keyword-btn:hover { background: rgba(184,134,42,0.20); border-color: var(--gold); color: var(--gold); }
+  #activeCardKeywordBtn {
+    position: fixed; right: 1.55rem; bottom: 6.95rem; z-index: 9998;
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid rgba(184,134,42,0.72);
+    background: linear-gradient(135deg, var(--gold), #8a6119);
+    color: #2c1f0e; cursor: help;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 900;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.38);
+    transition: transform 0.15s, opacity 0.15s, background 0.15s;
+  }
+  #activeCardKeywordBtn:hover { background: linear-gradient(135deg, var(--gold-light), var(--gold)); transform: translateY(-1px); }
+
   /* FILES TOGGLE BUTTON */
   .files-toggle-btn {
     display: flex; align-items: center; gap: 0.35rem;
     background: rgba(139,26,26,0.07); border: 1px solid rgba(184,134,42,0.35);
     border-radius: 3px; padding: 0.28rem 0.7rem;
-    font-family: 'Noto Sans Devanagari', sans-serif; font-size: 0.7rem;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif; font-size: 0.7rem;
     color: var(--red-seal); font-weight: 600; cursor: pointer;
     transition: all 0.18s; white-space: nowrap; user-select: none;
   }
   .files-toggle-btn:hover { background: rgba(139,26,26,0.14); border-color: var(--gold); }
+  .panel-expand-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: rgba(26,58,107,0.08); border: 1px solid rgba(26,58,107,0.28);
+    border-radius: 3px; color: var(--blue); cursor: pointer;
+    font-size: 0.82rem; font-weight: 800; line-height: 1;
+    transition: all 0.18s; user-select: none;
+  }
+  .panel-expand-btn:hover { background: rgba(26,58,107,0.16); border-color: #5b8cd6; }
+  .panel-expand-btn.active { background: var(--blue); color: #d0e4ff; border-color: #5b8cd6; }
+
+  .panel-autoscroll-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: rgba(26,92,42,0.08); border: 1px solid rgba(26,92,42,0.28);
+    border-radius: 3px; color: var(--green); cursor: pointer;
+    font-size: 0.82rem; font-weight: 800; line-height: 1;
+    transition: all 0.18s; user-select: none;
+  }
+  .panel-autoscroll-btn:hover { background: rgba(26,92,42,0.16); border-color: var(--green-light); }
+  .panel-autoscroll-btn.locked { background: rgba(139,26,26,0.10); border-color: rgba(139,26,26,0.35); color: var(--red-seal); }
+  .panel-autoscroll-btn.locked:hover { background: rgba(139,26,26,0.18); border-color: var(--red-seal); }
   .files-toggle-btn .ftb-arrow { font-size: 0.55rem; transition: transform 0.22s; color: var(--gold); }
   .files-toggle-btn.open .ftb-arrow { transform: rotate(180deg); }
   .files-toggle-btn .ftb-count {
@@ -253,11 +333,20 @@
     display: flex; align-items: center; gap: 0.25rem;
     background: #1a3a6b; color: #f8f2d4; border: 1px solid rgba(26,58,107,0.6);
     border-radius: 3px; padding: 0.32rem 0.72rem; font-size: 0.7rem;
-    font-family: 'Noto Sans Devanagari', sans-serif; cursor: pointer;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif; cursor: pointer;
     transition: all 0.18s; white-space: nowrap;
   }
   .btn-zip:hover { background: #253f76; border-color: #5b8cd6; }
-
+  .panel-footer .btn-zip { padding: 0.26rem 0.6rem; font-size: 0.68rem; flex-shrink: 0; }
+  .btn-cache-update {
+    display: flex; align-items: center; gap: 0.25rem;
+    background: #1a5c2a; color: #d4f0da; border: 1px solid rgba(26,92,42,0.65);
+    border-radius: 3px; padding: 0.26rem 0.6rem; font-size: 0.68rem;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
+    cursor: pointer; transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-cache-update:hover { background: #2d8a42; border-color: #54b86a; }
+  .btn-cache-update:disabled { opacity: 0.5; cursor: not-allowed; }
   /* ══════════ CASE LIST SECTION ══════════ */
   .list-section {
     flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0;
@@ -269,8 +358,9 @@
   }
   .selection-label { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; flex: 1; }
   .quick-btns { display: flex; gap: 0.5rem; }
-  .quick-btn { background: none; border: none; color: var(--red-seal); font-size: 0.65rem; font-family: 'Noto Sans Devanagari', sans-serif; cursor: pointer; font-weight: 600; text-decoration: underline; padding: 0; }
+  .quick-btn { background: none; border: none; color: var(--red-seal); font-size: 0.65rem; font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif; cursor: pointer; font-weight: 600; text-decoration: underline; padding: 0; }
   .quick-btn:hover { color: var(--gold); }
+  .quick-btn.match-active { color: var(--green); text-decoration-style: double; }
 
   /* Scroll outer with click arrows */
   .scroll-outer { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
@@ -409,6 +499,18 @@
     border-color: rgba(139,26,26,0.5);
   }
 
+  /* Right-panel cursor linked highlight in left panel */
+  .cat-header.cursor-linked,
+  .file-row.cursor-linked,
+  .item-row.cursor-linked {
+    background: #dbeeff !important;
+    box-shadow: inset 0 0 0 1px rgba(58,107,207,0.28);
+  }
+  .item-row.cursor-linked .item-content { background: rgba(219,238,255,0.55); }
+  .cat-header.cursor-linked .cat-file-name,
+  .file-row.cursor-linked .fname,
+  .item-row.cursor-linked .item-case-no { color: #1a3a6b; }
+
   .item-content {
     flex: 1; min-width: 0; padding: 0.4rem 0.8rem 0.4rem 0.4rem;
     display: flex; flex-direction: column; justify-content: center; gap: 0.13rem;
@@ -423,7 +525,7 @@
   }
   .item-case-sub {
     font-size: 0.78rem; color: #2c1f0e; font-weight: 500; line-height: 1.25;
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
   }
   /* recognition tag in left panel */
   .item-recognition {
@@ -450,7 +552,7 @@
     display: flex; align-items: center; gap: 0.3rem;
     background: var(--red-seal); border: 1px solid #6b1010;
     border-radius: 3px; padding: 0.28rem 0.65rem;
-    font-family: 'Noto Sans Devanagari', sans-serif; font-size: 0.68rem;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif; font-size: 0.68rem;
     color: #fde8c8; cursor: pointer; transition: all 0.18s;
     white-space: nowrap; user-select: none;
     box-shadow: 0 1px 4px rgba(139,26,26,0.35);
@@ -508,7 +610,7 @@
   .case-badge { background: linear-gradient(135deg, var(--red-seal), #6b1010); color: #f5e8c8; border-radius: 20px; padding: 4px 13px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; flex-shrink: 0; align-self: flex-start; }
   .card-body { padding: 1.2rem 1.4rem 1.2rem 1.8rem; }
   .card-body h4 { font-family: 'Noto Serif Devanagari', serif; font-size: 0.72rem; color: var(--muted); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.65rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(184,134,42,0.15); }
-  .order-text { font-size: 0.82rem; color: var(--ink); line-height: 1.75; white-space: pre-wrap; font-family: 'Noto Serif Devanagari', serif; margin: 0; padding: 0; border: none; background: transparent; }
+  .order-text { font-size: 0.82rem; color: var(--ink); line-height: 1.75; white-space: pre-wrap; font-family: 'Noto Serif Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', serif; margin: 0; padding: 0; border: none; background: transparent; }
   .card-footer { padding: 0.55rem 1.4rem 0.55rem 1.8rem; background: rgba(184,134,42,0.07); border-top: 1px solid rgba(184,134,42,0.18); font-size: 0.74rem; color: var(--muted); font-style: italic; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
   .card-footer .judge-name { margin-left: auto; font-weight: 600; font-style: normal; color: var(--ink); }
 
@@ -571,7 +673,7 @@
     padding: 0.26rem 22px 0.26rem 22px;
     border: 1px solid rgba(184,134,42,0.35); border-radius: 3px;
     background: rgba(255,255,255,0.08);
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
     font-size: 0.72rem; color: var(--gold-pale);
     outline: none; transition: border-color 0.18s, background 0.18s;
   }
@@ -634,7 +736,7 @@
   .srch-opt-row:hover { background: rgba(184,134,42,0.12); }
   .srch-opt-row span {
     font-size: 0.68rem; color: rgba(240,216,150,0.75);
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
   }
   .srch-opt-row input[type="checkbox"]:checked + span { color: #a8d4ff; }
   .srch-opt-row input[type="checkbox"] {
@@ -684,6 +786,43 @@
   .item-row.search-hidden { display: none; }
   .item-row.search-match .item-content { background: rgba(255,224,102,0.15); }
   .order-card.rp-hidden { display: none; }
+
+  .order-card.right-scroll-cue {
+    outline: 2px solid rgba(91,140,214,0.8);
+    box-shadow: inset 0 0 0 6px rgba(91,140,214,0.08), 0 6px 28px rgba(0,0,0,0.35);
+  }
+
+  #rightBackTopBtn {
+    position: fixed; right: 1.35rem; bottom: 1.35rem; z-index: 9998;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid rgba(184,134,42,0.85);
+    background: linear-gradient(135deg, var(--red-seal), #6b1010);
+    color: #fde8c8; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 800;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+    transition: transform 0.15s, opacity 0.15s, background 0.15s;
+  }
+  #rightBackTopBtn.visible { display: flex; }
+  #rightBackTopBtn:hover { background: linear-gradient(135deg, #6b1010, #4a0a0a); transform: translateY(-2px); }
+  #rightBackTopBtn:active { transform: translateY(0); }
+
+  #activeCardNavPair {
+    position: fixed; right: 1.55rem; bottom: 4.55rem; z-index: 9998;
+    display: flex; flex-direction: column; gap: 0.35rem;
+  }
+  #activeCardTopBtn, #activeCardBottomBtn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid rgba(184,134,42,0.65);
+    background: linear-gradient(135deg, #1a3a6b, #10284d);
+    color: #e8f1ff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 800;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.38);
+    transition: transform 0.15s, opacity 0.15s, background 0.15s;
+  }
+  #activeCardTopBtn:hover, #activeCardBottomBtn:hover { background: linear-gradient(135deg, #10284d, #07172e); transform: translateY(-1px); }
+  #activeCardTopBtn:active, #activeCardBottomBtn:active { transform: translateY(0); }
 
   /* ══════════ README MODAL ══════════ */
   #readme-overlay {
@@ -771,7 +910,7 @@
     transition: background 0.12s, color 0.12s;
     line-height: 1.35;
     border: none; background: none; text-align: left; width: 100%;
-    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
   }
   .toc-item:hover { background: rgba(184,134,42,0.15); color: var(--red-seal); }
   .toc-item.active { background: rgba(139,26,26,0.1); color: var(--red-seal); font-weight: 600; }
@@ -869,7 +1008,7 @@
     background: linear-gradient(135deg, var(--red-seal) 0%, #6b1010 100%);
     border: 1px solid #6b1010;
     border-radius: 3px; padding: 0.26rem 0.6rem;
-    font-family: 'Noto Sans Devanagari', sans-serif; font-size: 0.68rem;
+    font-family: 'Noto Sans Devanagari', 'Kalimati', 'Mangal', 'Nirmala UI', 'Arial Unicode MS', sans-serif; font-size: 0.68rem;
     color: #fde8c8; cursor: pointer; transition: all 0.18s;
     white-space: nowrap; user-select: none;
     box-shadow: 0 1px 4px rgba(139,26,26,0.3);
@@ -885,6 +1024,282 @@
   @media (max-width: 720px) {
     #readme-modal { max-height: 92vh; }
     .readme-toc { display: none; }
+  }
+
+
+  /* ══════════════════════════════════════════════
+     MOBILE + TABLET COMPATIBILITY UPGRADE
+     Desktop UI remains unchanged; these rules only activate on narrower screens.
+  ══════════════════════════════════════════════ */
+  @media (hover: none) and (pointer: coarse) {
+    button, .cat-label-area, .cat-check-zone, .item-row, .item-check-zone,
+    .files-toggle-btn, .quick-btn, .scroll-arrow, .srch-opts-btn {
+      -webkit-tap-highlight-color: rgba(184,134,42,0.22);
+    }
+    .case-list-scroll, #right-panel, #files-accordion, .readme-content, .readme-toc {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    :root { --sidebar-w: 340px; }
+    #top-header { padding: 0.5rem 0.85rem; gap: 0.55rem; }
+    .header-emblem { width: 38px; height: 38px; font-size: 1.15rem; }
+    .header-text h1 { font-size: clamp(0.9rem, 2.4vw, 1.15rem); }
+    .header-sub { font-size: 0.62rem; }
+    .search-input { width: 135px; }
+    #right-panel { padding: 1rem 1.1rem 2.5rem; }
+    .card-header { padding: 0.85rem 1.05rem 0.75rem 1.35rem; }
+    .card-body { padding: 1rem 1.05rem 1rem 1.35rem; }
+    .card-footer { padding: 0.5rem 1.05rem 0.5rem 1.35rem; }
+  }
+
+  @media (max-width: 820px) {
+    html, body {
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    body { min-width: 0; }
+
+    #top-header {
+      max-height: 34dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      align-items: flex-start;
+      gap: 0.45rem;
+      row-gap: 0.45rem;
+      padding: 0.45rem 0.55rem;
+    }
+
+    .header-divider { display: none; }
+    .header-sub { flex-basis: 100%; line-height: 1.25; }
+
+    .hdr-search {
+      flex: 1 1 calc(50% - 0.5rem);
+      min-width: 270px;
+      gap: 0.22rem;
+      padding: 0.18rem 0;
+    }
+    .hdr-search-label { font-size: 0.58rem; }
+    .search-input-wrap { flex: 1 1 auto; }
+    .search-input { width: 100%; min-width: 115px; font-size: 0.68rem; }
+    .search-nav-btn { padding: 2px 5px; }
+    .search-count { min-width: 28px; font-size: 0.58rem; }
+    .srch-opts-dropdown {
+      position: fixed;
+      top: auto;
+      right: 0.55rem;
+      left: 0.55rem;
+      bottom: 0.65rem;
+      max-height: 62dvh;
+      overflow-y: auto;
+      min-width: 0;
+      z-index: 10000;
+    }
+
+    #main-layout {
+      flex: 1;
+      min-height: 0;
+      height: auto;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #left-panel {
+      width: 100% !important;
+      height: 42dvh;
+      max-height: 42dvh;
+      min-height: 225px;
+      border-right: none;
+      border-bottom: 2px solid var(--border);
+      transition: height 0.28s cubic-bezier(0.4,0,0.2,1), max-height 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    body.mobile-left-wide #left-panel {
+      height: 74dvh;
+      max-height: 74dvh;
+    }
+
+    #left-panel.panel-collapsed {
+      width: 100% !important;
+      height: var(--collapse-tab-w);
+      max-height: var(--collapse-tab-w);
+      min-height: var(--collapse-tab-w);
+    }
+
+    #panel-resize-handle { display: none !important; }
+    #panel-collapse-tab {
+      top: auto;
+      bottom: 0;
+      right: 50%;
+      transform: translateX(50%) rotate(90deg);
+      height: 62px;
+      width: var(--collapse-tab-w);
+      border-radius: 0 6px 6px 0;
+    }
+
+    #panel-collapsed-label {
+      writing-mode: horizontal-tb;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: var(--collapse-tab-w);
+      font-size: 0.68rem;
+    }
+
+    .panel-inner-content {
+      padding-right: 0;
+      padding-bottom: calc(var(--collapse-tab-w) + 2px);
+    }
+
+    .panel-topbar {
+      padding: 0.5rem 0.65rem 0.5rem 0.9rem;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .panel-title-text { flex: 1 1 100%; font-size: 0.78rem; }
+    .files-toggle-btn, .btn-zip, .btn-reset, .panel-expand-btn, .auto-scroll-lock-btn {
+      padding: 0.25rem 0.48rem;
+      font-size: 0.64rem;
+    }
+
+    #files-accordion.open { max-height: 145px; }
+
+    .list-section { padding: 0.45rem 0.55rem 0 0.85rem; }
+    .selection-header { gap: 0.25rem; flex-wrap: wrap; }
+    .selection-label { font-size: 0.64rem; }
+    .quick-btns { gap: 0.35rem; flex-wrap: wrap; }
+    .quick-btn { font-size: 0.62rem; }
+    .cat-header { min-height: 34px; }
+    .cat-check-zone { width: 38px; }
+    .cat-file-name { font-size: 0.7rem; }
+    .cat-count-badge { font-size: 0.54rem; }
+    .item-row { min-height: 46px; }
+    .item-check-zone { width: 34px; }
+    .item-case-no { font-size: 0.68rem; }
+    .item-case-type { font-size: 0.6rem; }
+    .item-case-sub { font-size: 0.72rem; }
+    .item-recognition { font-size: 0.61rem; }
+    .scroll-arrow { height: 24px; font-size: 0.68rem; }
+    .panel-footer {
+      padding: 0.42rem 0.55rem 0.42rem 0.85rem;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .sel-count { font-size: 0.68rem; text-align: left; }
+    .sel-count span { font-size: 0.85rem; }
+    .live-label { font-size: 0.58rem; }
+
+    #right-panel {
+      flex: 1;
+      min-height: 0;
+      height: auto;
+      overflow-y: auto;
+      padding: 0.85rem 0.65rem 4.3rem;
+    }
+
+    #results-area { gap: 0.85rem; }
+    .results-header { font-size: 0.68rem; }
+    .order-card { border-radius: 4px; }
+    .card-header {
+      padding: 0.72rem 0.75rem 0.65rem 1.05rem;
+      gap: 0.45rem;
+    }
+    .card-court { font-size: 0.6rem; }
+    .card-case-no { font-size: 0.88rem; }
+    .card-recognition { font-size: 0.68rem; }
+    .case-badge { font-size: 0.62rem; padding: 3px 9px; }
+    .card-body { padding: 0.82rem 0.75rem 0.82rem 1.05rem; }
+    .card-body h4 { font-size: 0.64rem; }
+    .order-text { font-size: 0.76rem; line-height: 1.7; }
+    .card-footer {
+      padding: 0.45rem 0.75rem 0.45rem 1.05rem;
+      font-size: 0.65rem;
+      gap: 0.45rem;
+    }
+    .card-footer .judge-name { margin-left: 0; }
+
+    #rightBackTopBtn {
+      right: 0.75rem;
+      bottom: 0.85rem;
+      width: 38px;
+      height: 38px;
+      font-size: 1rem;
+    }
+    #activeCardNavPair {
+      right: 0.9rem;
+      bottom: 3.75rem;
+      gap: 0.28rem;
+    }
+    #activeCardTopBtn, #activeCardBottomBtn {
+      width: 28px;
+      height: 28px;
+      font-size: 0.72rem;
+    }
+    #activeCardKeywordBtn { right: 0.9rem; bottom: 6.0rem; width: 28px; height: 28px; font-size: 0.72rem; }
+
+    #toast {
+      max-width: calc(100vw - 1rem);
+      white-space: normal;
+      text-align: center;
+      bottom: 0.65rem;
+      font-size: 0.72rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    #top-header { max-height: 38dvh; }
+    .header-emblem { width: 34px; height: 34px; font-size: 1rem; }
+    .header-text h1 { font-size: 0.92rem; }
+    .header-text p { font-size: 0.58rem; }
+    .header-sub { font-size: 0.56rem; }
+    .hdr-search {
+      flex: 1 1 100%;
+      min-width: 0;
+      width: 100%;
+    }
+    .hdr-search-label { width: 70px; flex-shrink: 0; }
+    .search-input { font-size: 0.66rem; padding-top: 0.23rem; padding-bottom: 0.23rem; }
+    .srch-opts-dropdown { left: 0.35rem; right: 0.35rem; bottom: 0.45rem; }
+
+    #left-panel {
+      height: 40dvh;
+      max-height: 40dvh;
+      min-height: 210px;
+    }
+    body.mobile-left-wide #left-panel {
+      height: 72dvh;
+      max-height: 72dvh;
+    }
+    .panel-topbar { gap: 0.28rem; }
+    .files-toggle-btn, .btn-zip, .btn-reset, .panel-expand-btn, .auto-scroll-lock-btn {
+      padding: 0.22rem 0.38rem;
+      font-size: 0.6rem;
+    }
+    .btn-zip { gap: 0.18rem; }
+    .cat-label-area { padding-right: 0.45rem; }
+    .cat-file-name { font-size: 0.66rem; }
+    .item-content { padding-right: 0.5rem; }
+
+    #right-panel { padding: 0.7rem 0.48rem 4.1rem; }
+    .empty-state { padding: 2.2rem 0.5rem; }
+    .empty-state .icon { font-size: 2.5rem; }
+    .empty-state p { font-size: 0.76rem; }
+    .card-header { padding-left: 0.9rem; }
+    .card-body { padding-left: 0.9rem; }
+    .card-footer { padding-left: 0.9rem; }
+    .order-text { font-size: 0.72rem; line-height: 1.65; }
+  }
+
+  @media (orientation: landscape) and (max-height: 560px) and (max-width: 950px) {
+    #top-header { max-height: 30dvh; }
+    #left-panel { height: 36dvh; max-height: 36dvh; min-height: 165px; }
+    body.mobile-left-wide #left-panel { height: 64dvh; max-height: 64dvh; }
+    #files-accordion.open { max-height: 105px; }
+    .scroll-arrow { height: 22px; }
+    #right-panel { padding-bottom: 3.7rem; }
   }
 
 </style>
@@ -916,7 +1331,9 @@
       <button class="srch-opts-btn" onclick="toggleSearchOpts('leftOptsWrap')" title="खोज विकल्पहरू">⋮</button>
       <div class="srch-opts-dropdown" id="leftOptsDropdown">
         <label class="srch-opt-row"><input type="checkbox" id="leftNormChk" checked="checked" onchange="onLeftSearch()"><span>स — सामान्यीकरण</span></label>
-        <label class="srch-opt-row"><input type="checkbox" id="leftFolderChk" onchange="onLeftSearch()"><span>फो — फोल्डरमा मात्र</span></label>
+        <label class="srch-opt-row"><input type="checkbox" id="leftBothChk" checked="checked" onchange="setLeftSearchMode('both')"><span>फो+फा — फोल्डर र फाइल दुवै</span></label>
+        <label class="srch-opt-row"><input type="checkbox" id="leftFolderChk" onchange="setLeftSearchMode('folder')"><span>फो — फोल्डरमा मात्र</span></label>
+        <label class="srch-opt-row"><input type="checkbox" id="leftFilesChk" onchange="setLeftSearchMode('files')"><span>फा — फाइलमा मात्र</span></label>
         <div class="srch-opt-divider"></div>
         <div class="srch-opt-btns">
           <button class="srch-act-btn srch-act-reset" id="leftResetBtn" onclick="optsResetChks('left')">Reset1</button>
@@ -986,13 +1403,16 @@
       <!-- Topbar: title + files toggle + reset -->
       <div class="panel-topbar">
         <div class="panel-title-text">📋 मुद्दा चयन</div>
+        <button class="panel-expand-btn" id="panelExpandBtn" onclick="togglePanelWide()" title="देब्रे panel 90% सम्म फैलाउनुहोस् / फर्काउनुहोस्">⇱</button>
+        <button class="panel-autoscroll-btn" id="leftAutoScrollBtn" onclick="toggleLeftAutoScroll()" title="Left panel hover auto-scroll: ON">🔓</button>
+        <label class="kw-toggle-label" title="KW: फोल्डर/फाइल hover गर्दा Keywords देखाउने">
+          <input type="checkbox" id="leftKeywordHoverChk" onchange="toggleKeywordHover()">
+          <span>KW</span>
+        </label>
         <button class="files-toggle-btn" id="filesToggleBtn" onclick="toggleFilesAccordion()">
           <span id="ftbLabel">📂 फाइलहरू</span>
           <span class="ftb-count" id="ftbCount" style="display:none">0</span>
           <span class="ftb-arrow" id="ftbArrow">▼</span>
-        </button>
-        <button class="btn-zip" onclick="downloadAllJsonZip()" title="सबै JSON फाइलहरू ZIP रूपमा डाउनलोड गर्नुहोस्">
-          ⬇ ZIP
         </button>
         <button class="btn-reset" onclick="resetPanel()" title="पूर्वावस्थामा फर्कनुहोस्">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1018,8 +1438,8 @@
         <div class="selection-header">
           <span class="selection-label">मुद्दा सूची</span>
           <span class="quick-btns">
-            <button class="quick-btn" onclick="selectAll()">सबै छान्नुहोस्</button>
-            <button class="quick-btn" onclick="deselectAll()">सबै हटाउनुहोस्</button>
+            <button class="quick-btn" id="allToggleBtn" onclick="toggleSelectAll()" title="सबै मुद्दा छान्नुहोस् / हटाउनुहोस्">सबै छान्नुहोस्</button>
+            <button class="quick-btn" id="matchToggleBtn" onclick="toggleSelectLeftSearchMatches()" title="देब्रे खोजमा देखिएका/हाइलाइट भएका फोल्डर वा फाइलहरू मात्र छान्ने/हटाउने">हाइलाइटेडमात्र छान्नुहोस्</button>
           </span>
         </div>
 
@@ -1047,6 +1467,8 @@
         <div class="live-dot"></div>
         <span class="live-label">LIVE</span>
         <div class="sel-count">छानिएको: <span id="selCount">0</span> मुद्दा</div>
+        <button class="btn-cache-update" id="updateCacheBtn" onclick="updateCacheAndReload()" title="परिवर्तित pre-json फाइलहरू फेरि पढेर cache update गर्नुहोस्">↻ Cache</button>
+        <button class="btn-zip" onclick="downloadAllJsonZip()" title="सबै JSON फाइलहरू ZIP रूपमा डाउनलोड गर्नुहोस्">⬇ ZIP</button>
         <button class="btn-readme" onclick="openReadme()" title="प्रयोग निर्देशिका">📖 README</button>
       </div>
 
@@ -1065,11 +1487,19 @@
 
 </div><!-- /main-layout -->
 
+<button id="activeCardKeywordBtn" class="kw-hover-target" onmouseenter="showActiveCardKeywords(event)" onmousemove="moveKeywordTip(event)" onmouseleave="hideKeywordTip()" title="सक्रिय कार्डका Keywords">Key</button>
+<div id="activeCardNavPair" title="सक्रिय कार्ड नेभिगेसन">
+  <button id="activeCardTopBtn" onclick="scrollActiveCardTop()" title="सक्रिय कार्डको सुरुमा जानुहोस्">⇡</button>
+  <button id="activeCardBottomBtn" onclick="scrollActiveCardBottom()" title="सक्रिय कार्डको अन्त्यमा जानुहोस्">⇣</button>
+</div>
+<button id="rightBackTopBtn" onclick="scrollRightPanelTop()" title="दाहिने प्यानलको माथि जानुहोस्">↑</button>
+
 <div id="toast"></div>
 
 <!-- External library for .docx text extraction (optional) -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.18/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -1081,11 +1511,194 @@ const catCollapsed     = {};
 let filesAccordionOpen = false;
 let panelExpanded      = true;
 let resetAllExpanded   = false;
+let totalSourceFiles   = 0;
+
+// LocalStorage cache: parsed JSON is saved per source path so refresh does not re-fetch/re-parse.
+const LOCAL_JSON_CACHE_PREFIX = 'judgementViewer:loadedJson:v5-content-keyword:';
+if(window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+}
+
+function _safeCacheKey(src){
+  return LOCAL_JSON_CACHE_PREFIX + encodeURIComponent(src);
+}
+function _fileId(index, filename){
+  return 'file_'+index+'_'+filename.replace(/[^a-zA-Z0-9]/g,'_');
+}
+function _exportCasesForCache(cases){
+  return (cases||[]).map(({id,...rest})=>({
+    caseNo:rest.caseNo||'', petitionNo:rest.petitionNo||'',
+    type:rest.type||'', subject:rest.subject||'', court:rest.court||'काठमाडौं जिल्ला अदालत',
+    judge:rest.judge||'', date:rest.date||'', order:rest.order||'', recognition:rest.recognition||''
+  }));
+}
+function saveLoadedJsonCache(src, payload){
+  try {
+    localStorage.setItem(_safeCacheKey(src), JSON.stringify({
+      cachedAt: Date.now(), src, ...payload
+    }));
+  } catch(e) {
+    console.warn('LocalStorage cache save failed:', e);
+  }
+}
+function readLoadedJsonCache(src){
+  try {
+    const raw = localStorage.getItem(_safeCacheKey(src));
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    if(!data || !Array.isArray(data.cases)) return null;
+    return data;
+  } catch(e) {
+    console.warn('LocalStorage cache read failed:', e);
+    return null;
+  }
+}
+
+function clearLoadedJsonCache(){
+  try {
+    const prefixes = [LOCAL_JSON_CACHE_PREFIX, 'judgementViewer:loadedJson:'];
+    const keys = [];
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && prefixes.some(prefix => k.startsWith(prefix))) keys.push(k);
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+    return keys.length;
+  } catch(e) {
+    console.warn('LocalStorage cache clear failed:', e);
+    return 0;
+  }
+}
+
+function _cacheBustUrl(src){
+  const joiner = src.includes('?') ? '&' : '?';
+  return src + joiner + '_cache_update=' + Date.now();
+}
+
+async function fetchSource(src, forceReload=false){
+  const target = forceReload ? _cacheBustUrl(src) : src;
+  return fetch(target, forceReload ? {cache:'reload'} : undefined);
+}
+
+function resetLoadedStateForFreshReload(){
+  allFiles.length = 0;
+  Object.keys(catCollapsed).forEach(k => delete catCollapsed[k]);
+  selectedIds.clear();
+  document.getElementById('loaded-files-list').innerHTML = '';
+  document.getElementById('caseList').innerHTML = '<div class="menu-loading">↻ Cache update गर्दै फाइलहरू फेरि लोड हुँदैछन्…</div>';
+  document.getElementById('results-area').innerHTML = `
+    <div class="empty-state">
+      <span class="icon">↻</span>
+      <p>Cache update हुँदैछ…<br>परिमार्जित pre-json फाइलहरू फेरि पढिँदैछन्।</p>
+    </div>`;
+  updateSelectionCount();
+  updateFilesToggleCount();
+}
+
+async function updateCacheAndReload(){
+  if(_loadAllInProgress){ showToast('अहिले load भइरहेको छ। कृपया पूरा भएपछि फेरि Cache update गर्नुहोस्।','info'); return; }
+  const btn = document.getElementById('updateCacheBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '↻ Updating…'; }
+  const removed = clearLoadedJsonCache();
+  resetLoadedStateForFreshReload();
+  showToast(`↻ Cache clear भयो${removed ? ' ('+removed+')' : ''}; फाइलहरू फेरि लोड हुँदैछन्…`,'info');
+  try {
+    await loadAllFiles(true);
+    showToast('✓ Cache update भयो; modified files reload भयो','success');
+  } catch(e) {
+    console.error(e);
+    showToast('Cache update गर्दा त्रुटि भयो','error');
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = '↻ Cache'; }
+  }
+}
+function addParsedFileToState({src,index,filename,fileId,label,source,usedAI,cases,filetype,fromCache}){
+  if(allFiles.some(f=>f.id===fileId)) return;
+  const mappedCases = (cases||[]).map((c,i)=>({
+    caseNo:      normalizeLoadedNepaliText(c.caseNo || c.case_no || `(${i+1})`),
+    petitionNo:  normalizeLoadedNepaliText(c.petitionNo || c.petition_no || ''),
+    type:        c.type        || '',
+    subject:     normalizeLoadedNepaliText(c.subject || ''),
+    court:       normalizeLoadedNepaliText(c.court || 'काठमाडौं जिल्ला अदालत'),
+    judge:       normalizeLoadedNepaliText(c.judge || ''),
+    date:        normalizeLoadedNepaliText(c.date || ''),
+    order:       normalizeLoadedNepaliText(c.order || c.text || ''),
+    recognition: normalizeLoadedNepaliText(extractKeywordsFromTextBlock(c.order || c.text || '') || c.recognition || ''),
+    id:          fileId+'_c'+i
+  }));
+  if(!mappedCases.length){ updateFileRow(fileId,filename,'error','मुद्दा फेला परेन'); return; }
+  catCollapsed[fileId] = true;
+  allFiles.push({id:fileId,label:label||filename,filename,src,source,usedAI:!!usedAI,cases:mappedCases});
+  updateFileRow(fileId,filename,'done',`${mappedCases.length} मुद्दा${fromCache?' (cache)':(usedAI?' (AI)':filetype==='json'?' (JSON)':'')}`,fileId,filetype);
+  updateFilesToggleCount();
+  rebuildCaseList();
+}
+function updateMatchToggleButton(){
+  const btn=document.getElementById('matchToggleBtn');
+  if(!btn || typeof leftSearch==='undefined') return;
+  const matchedIds = leftSearch.matchedCaseIds ? [...leftSearch.matchedCaseIds] : [];
+  const matched = matchedIds.length;
+  const allMatchedSelected = matched && matchedIds.every(id=>selectedIds.has(id));
+  btn.textContent = matched
+    ? `${allMatchedSelected ? 'छानिएको हटाउनुहोस्' : 'हाइलाइटेडमात्र छान्नुहोस्'} (${matched})`
+    : 'हाइलाइटेडमात्र छान्नुहोस्';
+  btn.disabled = !matched;
+  btn.classList.toggle('match-active', !!matched);
+}
+
+function updateAllToggleButton(){
+  const btn=document.getElementById('allToggleBtn');
+  if(!btn) return;
+  const total = allFiles.reduce((sum,f)=>sum + (f.cases ? f.cases.length : 0), 0);
+  const allSelected = total > 0 && selectedIds.size === total;
+  btn.textContent = allSelected ? 'सबै हटाउनुहोस्' : 'सबै छान्नुहोस्';
+  btn.title = allSelected ? 'सबै चयन हटाउनुहोस्' : 'सबै मुद्दा छान्नुहोस्';
+}
+
+function updateSelectionToggleButtons(){
+  updateAllToggleButton();
+  updateMatchToggleButton();
+}
 
 // ═══════════════════════════════════════════════
 // LEFT PANEL COLLAPSE / EXPAND
 // ═══════════════════════════════════════════════
 let panelStoredWidth = 390;
+let panelWide = false;
+let panelBeforeWideWidth = 390;
+
+
+function setLeftPanelWidth(px){
+  const panel = document.getElementById('left-panel');
+  const width = Math.max(200, Math.min(px, Math.floor(window.innerWidth * 0.9)));
+  panel.style.width = width + 'px';
+  panel.style.setProperty('--sidebar-w', width + 'px');
+  panelStoredWidth = width;
+}
+
+function togglePanelWide(){
+  const btn = document.getElementById('panelExpandBtn');
+  if(!panelExpanded) toggleLeftPanel();
+
+  // Toggle wide mode. Second click always restores the fresh-page default width.
+  if(!panelWide){
+    setLeftPanelWidth(Math.floor(window.innerWidth * 0.9));
+    panelWide = true;
+    if(btn){
+      btn.classList.add('active');
+      btn.textContent = '⇲';
+      btn.title = 'देब्रे panel सामान्य आकारमा फर्काउनुहोस्';
+    }
+  } else {
+    setLeftPanelWidth(390);
+    panelWide = false;
+    if(btn){
+      btn.classList.remove('active');
+      btn.textContent = '⇱';
+      btn.title = 'देब्रे panel 90% सम्म फैलाउनुहोस् / फर्काउनुहोस्';
+    }
+  }
+}
 
 function toggleLeftPanel() {
   panelExpanded = !panelExpanded;
@@ -1094,6 +1707,9 @@ function toggleLeftPanel() {
 
   if (!panelExpanded) {
     panelStoredWidth = panel.offsetWidth || panelStoredWidth;
+    panelWide = false;
+    const btn = document.getElementById('panelExpandBtn');
+    if(btn){ btn.classList.remove('active'); btn.textContent = '⇱'; }
     panel.style.width = '';
   } else {
     panel.style.width = panelStoredWidth + 'px';
@@ -1125,9 +1741,13 @@ document.addEventListener('mousemove', function(event) {
   if (!panelResizing) return;
   const panel = document.getElementById('left-panel');
   const deltaX = event.clientX - panelStartX;
-  const newWidth = Math.max(200, Math.min(panelStartWidth + deltaX, window.innerWidth - 400));
+  const newWidth = Math.max(200, Math.min(panelStartWidth + deltaX, Math.floor(window.innerWidth * 0.9)));
   panel.style.width = newWidth + 'px';
   panel.style.setProperty('--sidebar-w', newWidth + 'px');
+  panelStoredWidth = newWidth;
+  panelWide = false;
+  const btn = document.getElementById('panelExpandBtn');
+  if(btn){ btn.classList.remove('active'); btn.textContent = '⇱'; }
 });
 
 document.addEventListener('mouseup', function() {
@@ -1152,10 +1772,12 @@ function openFilesAccordion()  { if (!filesAccordionOpen) toggleFilesAccordion()
 function closeFilesAccordion() { if (filesAccordionOpen)  toggleFilesAccordion(); }
 
 function updateFilesToggleCount() {
-  const n = allFiles.length;
+  const converted = allFiles.length;
+  const total = totalSourceFiles || converted;
   const el = document.getElementById('ftbCount');
-  el.textContent = n;
-  el.style.display = n > 0 ? 'inline' : 'none';
+  el.textContent = total ? (converted && converted !== total ? `${converted}/${total}` : String(total)) : '0';
+  el.title = total ? `Converted/loaded: ${converted}; linked source files: ${total}` : '';
+  el.style.display = total > 0 ? 'inline' : 'none';
 }
 
 // ═══════════════════════════════════════════════
@@ -1277,7 +1899,7 @@ function parseWithRegex(rawText, filename) {
 
     if(!caseNo&&!petitionNo&&order.length<20&&idx>0) return;
 
-    cases.push({ caseNo:caseNo||`(${idx+1})`, petitionNo, type, subject, court, judge, date, order, recognition:'' });
+    cases.push({ caseNo:caseNo||`(${idx+1})`, petitionNo, type, subject, court, judge, date, order, recognition: extractKeywordsFromTextBlock(block) });
   });
 
   if(itiCount>0 && cases.length!==itiCount){
@@ -1288,110 +1910,429 @@ function parseWithRegex(rawText, filename) {
 }
 
 
+
+
+// ═══════════════════════════════════════════════
+// NEPALI FONT / LEGACY ENCODING FIX
+// Converts many Preeti/Kantipur-style legacy .doc texts to Unicode before parsing/rendering.
+// It is intentionally heuristic: valid Unicode Devanagari text is kept unchanged.
+// ═══════════════════════════════════════════════
+function _extractReadableDocTextFromBuffer(buf){
+  const bytes = new Uint8Array(buf);
+
+  function cleanCandidate(t){
+    return (t||'')
+      .replace(/\u0000+/g, ' ')
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]+/g, ' ')
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function decodeWhole(enc){
+    try { return new TextDecoder(enc, {fatal:false}).decode(buf); } catch(e) { return ''; }
+  }
+
+  // Word 97-2003 .doc is usually OLE binary. In-browser full parsing is not
+  // available without a server-side converter, so this extracts readable text
+  // streams from common binary/HTML/RTF/plain variants saved with .doc extension.
+  function extractAsciiRuns(minLen=4){
+    const chunks=[]; let cur='';
+    for(const b of bytes){
+      if((b>=32 && b<=126) || b===9 || b===10 || b===13 || b>=160){ cur += String.fromCharCode(b); }
+      else { if(cur.length>=minLen) chunks.push(cur); cur=''; }
+    }
+    if(cur.length>=minLen) chunks.push(cur);
+    return chunks.join('\n');
+  }
+
+  function extractUtf16LeRuns(minLen=3){
+    const chunks=[]; let cur='';
+    for(let i=0;i+1<bytes.length;i+=2){
+      const code = bytes[i] | (bytes[i+1]<<8);
+      const ok = code===9 || code===10 || code===13 || (code>=32 && code<=0xD7FF) || (code>=0x0900 && code<=0x097F);
+      if(ok) cur += String.fromCharCode(code);
+      else { if(cur.length>=minLen) chunks.push(cur); cur=''; }
+    }
+    if(cur.length>=minLen) chunks.push(cur);
+    return chunks.join('\n');
+  }
+
+  function stripHtmlDoc(t){
+    if(!/<html|<body|<p|<div|<span/i.test(t)) return t;
+    const doc = new DOMParser().parseFromString(t, 'text/html');
+    return doc.body ? doc.body.innerText : t.replace(/<[^>]+>/g,' ');
+  }
+
+  const candidates = [];
+  const wholeUtf8 = decodeWhole('utf-8');
+  const wholeUtf16 = decodeWhole('utf-16le');
+  const wholeWin = decodeWhole('windows-1252');
+  candidates.push(wholeUtf8, wholeUtf16, wholeWin, extractUtf16LeRuns(), extractAsciiRuns());
+
+  // Some files are RTF/HTML but have .doc extension.
+  const expanded = [];
+  for(const c of candidates){
+    const cc = cleanCandidate(c);
+    if(!cc) continue;
+    if(/^\s*\{\\rtf/i.test(cc)) expanded.push(_stripRtfToText(cc));
+    expanded.push(stripHtmlDoc(cc));
+  }
+
+  function score(t){
+    t = cleanCandidate(t);
+    const devanagari = (t.match(/[\u0900-\u097F]/g)||[]).length;
+    const legacy = (t.match(/[cfkmglnpP{}\[\]\\|]/g)||[]).length;
+    const words = (t.match(/[\u0900-\u097FA-Za-z0-9]{2,}/g)||[]).length;
+    const bad = (t.match(/[�]/g)||[]).length;
+    const noise = (t.match(/[\u0001-\u001F]/g)||[]).length;
+    return devanagari*10 + legacy*1.3 + Math.min(words, 8000)/4 - bad*60 - noise*5;
+  }
+  const cleaned = expanded.map(cleanCandidate).filter(Boolean);
+  cleaned.sort((a,b)=>score(b)-score(a));
+  return cleaned[0] || '';
+}
+
+function _looksLikeLegacyNepali(t){
+  if(!t) return false;
+  const devanagari = (t.match(/[\u0900-\u097F]/g)||[]).length;
+  const latin = (t.match(/[A-Za-z]/g)||[]).length;
+  const preetiMarks = (t.match(/[cfkmglnpP{}\[\]\\|]/g)||[]).length;
+  const nepaliHints = /(cbfnt|kmf|k|sf|df|lg|eGg|clb|k|cf|ug{)/.test(t);
+  return devanagari < 20 && latin > 30 && preetiMarks > 20 && (preetiMarks > devanagari || nepaliHints);
+}
+
+function _preetiBasicToUnicode(input){
+  let t = String(input || '');
+
+  // Longer/special sequences first. This covers the most common Preeti/Kantipur glyph sequences.
+  const map = [
+    ['ç','ॐ'], ['˜','ऽ'], ['.','।'], [')','०'], ['!','१'], ['@','२'], ['#','३'], ['$','४'], ['%','५'], ['^','६'], ['&','७'], ['*','८'], ['(','९'],
+    ['qm','क्र'], ['km','फ्र'], ['em','झ'], ['If','क्ष'], ['Qm','क्त'], ['q','त्र'], ['Q','त्त'], ['B','द्य'], ['I','क्ष'],
+    ['k|m','फ्र'], ['N˜','ँ'], ['¡','ज्ञ'], ['¢','द्घ'], ['>','श्र'], ['?','रु'], ['ß','द्म'], ['„','ध्र'], ['‹','ङ्घ'], ['•','द्ध'], ['›','द्र'], ['§','ट्ट'], ['°','ड्ढ'], ['¶','ठ्ठ'], ['¿','रू'],
+    ['Å','हृ'], ['Ë','ङ्ग'], ['Ì','त्र'], ['Í','ज्ञ'], ['Î','द्य'], ['Ý','ट्ट'], ['å','द्व'],
+    ['6«','ट्र'], ['7«','ठ्र'], ['8«','ड्र'], ['9«','ढ्र'], ['8Þ','ड्ढ'], ['9Þ','ढ्ढ'],
+    ['S','क्'], ['s','क'], ['V','ख्'], ['v','ख'], ['U','ग्'], ['u','ग'], ['£','घ्'], ['3','घ'], ['ª','ङ'],
+    ['R','च्'], ['r','च'], ['5','छ'], ['H','ज्'], ['h','ज'], ['‰','झ्'], ['´','ञ'],
+    ['~','ञ्'], ['`','ण्'], ['6','ट'], ['7','ठ'], ['8','ड'], ['9','ढ'], ['0','ण'],
+    ['T','त्'], ['t','त'], ['Y','थ्'], ['y','थ'], ['b','द'], ['W','ध्'], ['w','ध'], ['G','न्'], ['g','न'],
+    ['K','प्'], ['k','प'], ['ˆ','फ्'], ['A','ब्'], ['a','ब'], ['E','भ्'], ['e','भ'], ['D','म्'], ['d','म'],
+    ['o','य'], ['/','र'], ['N','ल्'], ['n','ल'], ['J','व्'], ['j','व'], ['Z','श्'], ['z','श'], ['i','ष्'], [':','स्'], [';','स'], ['X','ह्'], ['x','ह'],
+    ['cf}','औ'], ['cf]','ऐ'], ['cf‘','ऑ'], ['c‘f','ऑ'], ['cf','आ'], ['c','अ'], ['O{','ई'], ['O','इ'], ['pm','ऊ'], ['p','उ'], ['C','ऋ'],
+    ['P]','ए'], ['P','ए'], ['f‘','ॉ'], ['"','ू'], ["'",'ु'], ['+','ं'], ['f','ा'], ['[','ृ'], ['\\','्'], [']','े'], ['}','ै'], ['F','ँ'], ['L','ी'], ['M','ः'], ['|','्र']
+  ];
+  for(const [a,b] of map){
+    t = t.split(a).join(b);
+  }
+
+  // Preeti uses l as preposed short-i sign. Move ि after the following consonant cluster.
+  t = t.replace(/l([क-हक़-य़](?:्[क-हक़-य़])?)/g, '$1ि');
+  // Some legacy text leaves i-matra before punctuation/space; clean common order issues.
+  t = t.replace(/([क-हक़-य़])्ि/g, '$1ि्');
+  t = t.replace(/िा/g, 'ाे').replace(/ाे/g, 'ो').replace(/िै/g, 'ै');
+  t = t.replace(/्ा/g, '्');
+  return t;
+}
+
+function normalizeLoadedNepaliText(text){
+  let t = String(text || '');
+  // Remove common binary/control residue from .doc best-effort extraction.
+  t = t.replace(/\u0000+/g, ' ').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]+/g, ' ');
+  if(_looksLikeLegacyNepali(t)) t = _preetiBasicToUnicode(t);
+  return t.replace(/[ \t]{2,}/g, ' ').replace(/\n[ \t]+/g, '\n').trim();
+}
+
+
+
+// ═══════════════════════════════════════════════
+// CONTENT KEYWORD EXTRACTION
+// Reads explicit file-content directives such as:
+//   :keyword:{सुनसरी जिअ, ०७9-CP-3227, सवि, दापु, प्रतिवादीले अर्को बिहे गरेको स्वीकार}
+// This intentionally overrides older/metadata keyword fields so KW hover always follows the latest in-document keyword line.
+// ═══════════════════════════════════════════════
+function _cleanKeywordText(value){
+  return normalizeLoadedNepaliText(value || '')
+    .replace(/[\n\r]+/g, ' ')
+    .replace(/\s*,\s*/g, ', ')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^\s*,+|,+\s*$/g, '')
+    .trim();
+}
+
+function extractKeywordsFromTextBlock(text){
+  const src = normalizeLoadedNepaliText(text || '');
+  if(!src) return '';
+  const found = [];
+  const re = /(?:^|[\s\n\r])[:：]?\s*keyword\s*[:：]\s*\{([\s\S]*?)\}/gi;
+  let m;
+  while((m = re.exec(src)) !== null){
+    const kw = _cleanKeywordText(m[1] || '');
+    if(kw) found.push(kw);
+  }
+  return [...new Set(found)].join(', ');
+}
+
+function extractKeywordDirectives(rawText){
+  const src = normalizeLoadedNepaliText(rawText || '');
+  const out = [];
+  const re = /(?:^|[\s\n\r])[:：]?\s*keyword\s*[:：]\s*\{([\s\S]*?)\}/gi;
+  let m;
+  while((m = re.exec(src)) !== null){
+    const kw = _cleanKeywordText(m[1] || '');
+    if(kw) out.push(kw);
+  }
+  return out;
+}
+
+function applyContentKeywordsToCases(cases, rawText){
+  cases = cases || [];
+  if(!cases.length) return cases;
+  const allDirectives = extractKeywordDirectives(rawText);
+
+  // 1) Strongest match: keyword directive inside the parsed order/case text itself.
+  cases.forEach(c => {
+    const inOrder = extractKeywordsFromTextBlock(c.order || c.text || '');
+    if(inOrder) c.recognition = inOrder;
+  });
+
+  // 2) If the file has one keyword directive per case, map them in order.
+  if(allDirectives.length && allDirectives.length === cases.length){
+    cases.forEach((c,i) => { c.recognition = allDirectives[i]; });
+    return cases;
+  }
+
+  // 3) If this is a single-case file, use the single/multiple file-level directive(s).
+  if(cases.length === 1 && allDirectives.length){
+    cases[0].recognition = [...new Set(allDirectives)].join(', ');
+    return cases;
+  }
+
+  // 4) Best effort: split by the same structural marker and map block keywords.
+  const text = normalizeLoadedNepaliText(rawText || '');
+  const rawBlocks = text.split(/(?=\n\s*श्री\s*\n)/).map(b=>b.trim()).filter(b=>b.length>40&&/श्री/.test(b));
+  if(rawBlocks.length === cases.length){
+    rawBlocks.forEach((block,i) => {
+      const kw = extractKeywordsFromTextBlock(block);
+      if(kw) cases[i].recognition = kw;
+    });
+  }
+  return cases;
+}
+
+
+function _fallbackSingleCaseFromText(rawText, filename){
+  const clean = normalizeLoadedNepaliText(rawText || '');
+  const base = filename.replace(/\.[^.]+$/,'');
+  return {
+    label: base,
+    cases: [{
+      caseNo: base,
+      petitionNo: '',
+      type: filename.split('.').pop().toUpperCase() + ' Document',
+      subject: base,
+      court: '',
+      judge: '',
+      date: '',
+      order: clean || '(फाइलबाट text निकाल्न सकिएन)',
+      recognition: extractKeywordsFromTextBlock(clean)
+    }]
+  };
+}
+
+function _stripRtfToText(rtf){
+  let s = String(rtf || '');
+  s = s.replace(/\\u(-?\d+)\??/g, (_, n) => {
+    let code = parseInt(n,10);
+    if(code < 0) code += 65536;
+    try { return String.fromCharCode(code); } catch(e){ return ''; }
+  });
+  s = s.replace(/\\'([0-9a-fA-F]{2})/g, (_, h) => String.fromCharCode(parseInt(h,16)));
+  s = s.replace(/\\par[d]?/g, '\n').replace(/\\line/g, '\n').replace(/\\tab/g, ' ');
+  s = s.replace(/\{\\fonttbl[\s\S]*?\}/g, ' ')
+       .replace(/\{\\colortbl[\s\S]*?\}/g, ' ')
+       .replace(/\{\\[^{}]*?\}/g, ' ')
+       .replace(/[{}]/g, ' ')
+       .replace(/\\[a-zA-Z]+-?\d* ?/g, ' ')
+       .replace(/\\./g, ' ');
+  return normalizeLoadedNepaliText(s);
+}
+
+async function _extractPdfTextFromBuffer(buf){
+  if(!window.pdfjsLib) throw new Error('PDF.js library not loaded');
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  const pages = [];
+  for(let p=1; p<=pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const tc = await page.getTextContent();
+    const line = tc.items.map(it => it.str || '').join(' ');
+    pages.push(line);
+  }
+  return normalizeLoadedNepaliText(pages.join('\n\n'));
+}
+
+async function extractTextFromSource(src, filename, forceReload=false){
+  const ext = filename.split('.').pop().toLowerCase();
+  const res = await fetchSource(src, forceReload);
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  if(ext === 'docx'){
+    const buf = await res.arrayBuffer();
+    if(window.mammoth && typeof mammoth.extractRawText === 'function'){
+      const out = await mammoth.extractRawText({arrayBuffer: buf});
+      return normalizeLoadedNepaliText(out.value || '');
+    }
+    return normalizeLoadedNepaliText(_decodeBufferBestEffort(buf));
+  }
+
+  if(ext === 'doc'){
+    const buf = await res.arrayBuffer();
+    return normalizeLoadedNepaliText(_extractReadableDocTextFromBuffer(buf));
+  }
+
+  if(ext === 'pdf'){
+    const buf = await res.arrayBuffer();
+    return await _extractPdfTextFromBuffer(buf);
+  }
+
+  if(ext === 'rtf'){
+    const text = await res.text();
+    return _stripRtfToText(text);
+  }
+
+  // .txt and other plain-text-like files
+  const text = await res.text();
+  return normalizeLoadedNepaliText(text);
+}
+
 // ═══════════════════════════════════════════════
 // LOAD ONE FILE
 // ═══════════════════════════════════════════════
-async function loadTxtFile(src, index, total) {
+async function loadTxtFile(src, index, total, forceReload=false) {
   const filename=src.split('/').pop();
-  const fileId='file_'+index+'_'+filename.replace(/[^a-zA-Z0-9]/g,'_');
-  updateFileRow(fileId,filename,'processing','AI विश्लेषण…');
+  const fileId=_fileId(index, filename);
+  const ext = filename.split('.').pop().toLowerCase();
+  const cached = !forceReload ? readLoadedJsonCache(src) : null;
+  if(cached){
+    addParsedFileToState({src,index,filename,fileId,label:cached.label||filename,source:cached.source||'text-import',usedAI:!!cached.usedAI,cases:cached.cases,filetype:cached.filetype||ext,fromCache:true});
+    updateAIStatus(`"${filename}" cache बाट लोड…`,`${index}/${total}`);
+    return;
+  }
+
+  updateFileRow(fileId,filename,'processing', forceReload ? 'Text फेरि निकाल्दै…' : 'Text निकाल्दै…');
   updateAIStatus(`"${filename}" प्रशोधन…`,`${index}/${total}`);
 
-  const ext = filename.split('.').pop().toLowerCase();
   let rawText;
   try {
-    const res=await fetch(src);
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    if(ext==='docx'){
-      const buf = await res.arrayBuffer();
-      if(window.mammoth && typeof mammoth.extractRawText==='function'){
-        try { rawText = (await mammoth.extractRawText({arrayBuffer: buf})).value; }
-        catch { rawText = new TextDecoder('utf-8').decode(buf); }
-      } else {
-        rawText = new TextDecoder('utf-8').decode(buf);
-      }
-    } else if(ext==='doc'){
-      const buf = await res.arrayBuffer();
-      rawText = new TextDecoder('utf-8').decode(buf);
-    } else {
-      rawText=await res.text();
-    }
-  } catch(e){ updateFileRow(fileId,filename,'error','फेला परेन'); return; }
+    rawText = await extractTextFromSource(src, filename, forceReload);
+  } catch(e){ updateFileRow(fileId,filename,'error','फेला/पढ्न सकिएन: '+e.message); return; }
 
   let parsed,usedAI=false;
   try   { parsed=await parseWithAI(rawText,filename); usedAI=true; }
-  catch { try{ parsed=parseWithRegex(rawText,filename); }catch{ updateFileRow(fileId,filename,'error','पार्स गर्न सकिएन'); return; } }
+  catch { try{ parsed=parseWithRegex(rawText,filename); }catch{ parsed=_fallbackSingleCaseFromText(rawText, filename); } }
 
-  const cases=(parsed.cases||[]).map((c,i)=>({
-    caseNo:      c.caseNo      || c.case_no    || `(${i+1})`,
-    petitionNo:  c.petitionNo  || c.petition_no|| '',
-    type:        c.type        || '',
-    subject:     c.subject     || '',
-    court:       c.court       || 'काठमाडौं जिल्ला अदालत',
-    judge:       c.judge       || '',
-    date:        c.date        || '',
-    order:       c.order       || '',
-    recognition: c.recognition || '',
-    id:          fileId+'_c'+i
-  }));
-  if(!cases.length){ updateFileRow(fileId,filename,'error','मुद्दा फेला परेन'); return; }
-
-  catCollapsed[fileId] = true;
-
-  allFiles.push({id:fileId,label:filename,filename,src,source:'txt-import',usedAI,cases});
-  updateFileRow(fileId,filename,'done',`${cases.length} मुद्दा${usedAI?' (AI)':''}`,fileId);
-  updateFilesToggleCount();
-  rebuildCaseList();
+  let cases=(parsed.cases||[]);
+  cases = applyContentKeywordsToCases(cases, rawText);
+  if(!cases.length){
+    parsed = _fallbackSingleCaseFromText(rawText, filename);
+    cases = applyContentKeywordsToCases(parsed.cases || [], rawText);
+  }
+  if(!cases.length){ updateFileRow(fileId,filename,'error','Text फेला परेन'); return; }
+  const label = parsed.label || filename.replace(/\.[^.]+$/,'') || filename;
+  saveLoadedJsonCache(src,{label,filename,source:'text-import',usedAI,filetype:ext,cases:_exportCasesForCache(cases)});
+  addParsedFileToState({src,index,filename,fileId,label,source:'text-import',usedAI,cases,filetype:ext,fromCache:false});
 }
 
 // ═══════════════════════════════════════════════
 // LOAD ALL
 // ═══════════════════════════════════════════════
-async function loadAllFiles() {
-  const tags=[...document.querySelectorAll('script[src]')]
-    .filter(s=>{
-      const src=s.getAttribute('src').toLowerCase();
-      return src.endsWith('.txt')||src.endsWith('.doc')||src.endsWith('.docx')||src.endsWith('.json');
-    });
-  if(!tags.length){
+let _initialLoadRetryCount = 0;
+let _loadAllInProgress = false;
+let _lastDiscoveredSourceCount = 0;
+
+function getLoadableScriptSources(){
+  const exts = /\.(txt|doc|docx|rtf|pdf|json)(?:[?#].*)?$/i;
+  const srcs = [...document.querySelectorAll('script[src]')]
+    .map(s => (s.getAttribute('src') || '').trim())
+    .filter(src => src && exts.test(src));
+  return [...new Set(srcs)];
+}
+
+// ═══════════════════════════════════════════════
+// LOAD ALL
+// ═══════════════════════════════════════════════
+async function loadAllFiles(forceReload=false) {
+  if(_loadAllInProgress) return;
+  const srcs = getLoadableScriptSources();
+  totalSourceFiles = srcs.length;
+  updateFilesToggleCount();
+
+  // Some browsers/servers expose late DOCS <script src=...> nodes after parser recovery.
+  // Retry briefly before showing empty state, so the left panel never remains blank.
+  if(!srcs.length){
+    if(_initialLoadRetryCount < 12){
+      _initialLoadRetryCount++;
+      document.getElementById('caseList').innerHTML =
+        '<div class="menu-loading">⏳ फाइल सूची खोजिँदैछ…</div>';
+      setTimeout(() => loadAllFiles(forceReload), 250);
+      return;
+    }
     document.getElementById('caseList').innerHTML=
-      '<div class="menu-loading">📄 कुनै फाइल लिंक छैन<br><small>&lt;script src="file.txt"&gt; वा &lt;script src="file.json"&gt; थप्नुहोस्</small></div>';
+      '<div class="menu-loading">📄 कुनै फाइल लिंक छैन<br><small>&lt;script src="file.txt/.doc/.docx/.rtf/.pdf"&gt; वा &lt;script src="file.json"&gt; थप्नुहोस्</small></div>';
     return;
   }
+
+  _lastDiscoveredSourceCount = srcs.length;
+  _loadAllInProgress = true;
   openFilesAccordion();
-  const srcs=tags.map(s=>s.getAttribute('src'));
   const total=srcs.length;
   showAIStatus();
-  for(let i=0;i<srcs.length;i++){
-    const src=srcs[i];
-    if(src.toLowerCase().endsWith('.json')){
-      await loadJsonFile(src,i+1,total);
-    } else {
-      await loadTxtFile(src,i+1,total);
+  try {
+    for(let i=0;i<srcs.length;i++){
+      const src=srcs[i];
+      if(src.toLowerCase().match(/\.json(?:[?#].*)?$/)){
+        await loadJsonFile(src,i+1,total,forceReload);
+      } else {
+        await loadTxtFile(src,i+1,total,forceReload);
+      }
+      // Keep the left panel alive even if one source fails.
+      updateScrollArrows();
     }
+  } finally {
+    _loadAllInProgress = false;
+    hideAIStatus();
+    closeFilesAccordion();
   }
-  hideAIStatus();
-  closeFilesAccordion();
-  if(allFiles.length) showToast(`✓ ${allFiles.reduce((s,f)=>s+f.cases.length,0)} मुद्दा लोड भयो`,'success');
+  if(allFiles.length) showToast(`✓ ${allFiles.reduce((sum,f)=>sum+(f.cases?f.cases.length:0),0)} मुद्दा लोड भयो`,'success');
+  else {
+    document.getElementById('caseList').innerHTML = '<div class="menu-loading">⚠️ फाइल भेटियो तर पढ्न/लोड गर्न सकिएन। माथिको “फाइलहरू” खोल्नुहोस्।</div>';
+    openFilesAccordion();
+  }
   updateScrollArrows();
 }
 
 // ═══════════════════════════════════════════════
 // LOAD ONE JSON FILE
 // ═══════════════════════════════════════════════
-async function loadJsonFile(src, index, total) {
+async function loadJsonFile(src, index, total, forceReload=false) {
   const filename=src.split('/').pop();
-  const fileId='file_'+index+'_'+filename.replace(/[^a-zA-Z0-9]/g,'_');
+  const fileId=_fileId(index, filename);
+  const cached = !forceReload ? readLoadedJsonCache(src) : null;
+  if(cached){
+    addParsedFileToState({src,index,filename,fileId,label:cached.label||filename,source:cached.source||'json-import',usedAI:false,cases:cached.cases,filetype:'json',fromCache:true});
+    updateAIStatus(`"${filename}" cache बाट लोड…`,`${index}/${total}`);
+    return;
+  }
+
   updateFileRow(fileId,filename,'processing','JSON लोड…');
   updateAIStatus(`"${filename}" लोड…`,`${index}/${total}`);
 
   let parsed;
+  let jsonRawText = '';
   try {
-    const res=await fetch(src);
+    const res=await fetchSource(src, forceReload);
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text=await res.text();
-    parsed=JSON.parse(text);
+    jsonRawText=await res.text();
+    parsed=JSON.parse(jsonRawText);
   } catch(e){ updateFileRow(fileId,filename,'error','JSON पढ्न सकिएन: '+e.message); return; }
 
   if(!parsed||!Array.isArray(parsed.cases)){
@@ -1399,28 +2340,13 @@ async function loadJsonFile(src, index, total) {
     return;
   }
 
-  // Map JSON fields — no party fields in new schema
-  const cases=parsed.cases.map((c,i)=>({
-    caseNo:      c.caseNo      || `(${i+1})`,
-    petitionNo:  c.petitionNo  || '',
-    type:        c.type        || '',
-    subject:     c.subject     || '',
-    court:       c.court       || 'काठमाडौं जिल्ला अदालत',
-    judge:       c.judge       || '',
-    date:        c.date        || '',
-    order:       c.order       || '',
-    recognition: c.recognition || '',
-    id:          fileId+'_c'+i
-  }));
-
+  let cases=parsed.cases||[];
+  // Also support JSON whose case.order/text contains :keyword:{...}; this overrides old recognition/keyword fields.
+  cases = applyContentKeywordsToCases(cases, jsonRawText + '\n' + cases.map(c => c.order || c.text || '').join('\n'));
   if(!cases.length){ updateFileRow(fileId,filename,'error','मुद्दा फेला परेन'); return; }
-
-  catCollapsed[fileId]=true;
-  const label = filename;
-  allFiles.push({id:fileId,label,filename,src,source:'json-import',usedAI:false,cases});
-  updateFileRow(fileId,filename,'done',`${cases.length} मुद्दा (JSON)`,fileId,'json');
-  updateFilesToggleCount();
-  rebuildCaseList();
+  const label = parsed.label || filename;
+  saveLoadedJsonCache(src,{label,filename,source:'json-import',usedAI:false,filetype:'json',cases:_exportCasesForCache(cases)});
+  addParsedFileToState({src,index,filename,fileId,label,source:'json-import',usedAI:false,cases,filetype:'json',fromCache:false});
 }
 
 // ═══════════════════════════════════════════════
@@ -1431,6 +2357,7 @@ function updateFileRow(id,filename,state,info,fileId,filetype){
   let row=document.getElementById('frow-'+id);
   if(!row){row=document.createElement('div');row.id='frow-'+id;container.appendChild(row);}
   row.className='file-row '+state;
+  row.dataset.fileId = fileId || id || '';
   const actionBtn = fileId
     ? (filetype==='json'
         ? `<span class="btn-json" style="cursor:default;background:rgba(26,58,107,0.18);color:#3a6bcf;border-color:rgba(26,58,107,0.3)" title="JSON फाइलबाट लोड भएको">{}</span>`
@@ -1438,7 +2365,7 @@ function updateFileRow(id,filename,state,info,fileId,filetype){
     : '';
   row.innerHTML=`
     <span class="dot"></span>
-    <span class="fname" title="${filename}">${filetype==='json'?'{}':'📄'} ${filename}</span>
+    <span class="fname" title="${escapeHtmlForOrder(filename)}">${filetype==='json'?'{}':filetype==='pdf'?'📕':filetype==='rtf'?'📝':'📄'} ${escapeHtmlForOrder(filename)}</span>
     <span class="finfo">${info}</span>
     ${actionBtn}`;
 }
@@ -1467,7 +2394,7 @@ function downloadJson(fileId){
     court:rest.court, judge:rest.judge, date:rest.date,
     order:rest.order, recognition:rest.recognition||''
   }));
-  const jsonFilename = f.filename.replace(/\.(txt|doc|docx|json)$/i,'') + '.json';
+  const jsonFilename = f.filename.replace(/\.(txt|doc|docx|rtf|pdf|json)$/i,'') + '.json';
   const blob=new Blob([JSON.stringify({filename:jsonFilename,label:jsonFilename,parsedAt:new Date().toISOString(),totalCases:f.cases.length,cases:exportCases},null,2)],{type:'application/json'});
   const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:jsonFilename});
   a.click();URL.revokeObjectURL(a.href);
@@ -1497,6 +2424,13 @@ function ensureJsZipLoaded(){
 
 async function downloadAllJsonZip(){
   if(!allFiles.length){ showToast('कोही फाइल लोड गरिएको छैन','error'); return; }
+
+  const ok = window.confirm('सबै उपलब्ध JSON फाइलहरू ZIP रूपमा डाउनलोड गर्ने हो?');
+  if(!ok){
+    showToast('ZIP डाउनलोड रद्द गरियो','info');
+    return;
+  }
+
   try {
     await ensureJsZipLoaded();
   } catch (err) {
@@ -1513,7 +2447,7 @@ async function downloadAllJsonZip(){
       court:rest.court, judge:rest.judge, date:rest.date,
       order:rest.order, recognition:rest.recognition||''
     }));
-    const jsonFilename = f.filename.replace(/\.(txt|doc|docx|json)$/i,'') + '.json';
+    const jsonFilename = f.filename.replace(/\.(txt|doc|docx|rtf|pdf|json)$/i,'') + '.json';
     const json = JSON.stringify({filename:jsonFilename,label:jsonFilename,parsedAt:new Date().toISOString(),totalCases:f.cases.length,cases:exportCases},null,2);
     zip.file(jsonFilename, json);
   });
@@ -1561,9 +2495,10 @@ function rebuildCaseList(){
           ${allSelected?'checked':''}
           title="सबै छान्नुहोस् / हटाउनुहोस्">
       </div>
-      <div class="cat-label-area" onclick="toggleCat('${file.id}')">
+      <div class="cat-label-area kw-hover-target" onclick="toggleCat('${file.id}')"
+           onmouseenter="showFolderKeywords(event,'${file.id}')" onmousemove="moveKeywordTip(event)" onmouseleave="hideKeywordTip()">
         <span class="cat-arrow">▼</span>
-        <span class="cat-file-name">📁 ${file.label}${aiTag}</span>
+        <span class="cat-file-name">📁 ${escapeHtmlForOrder(file.label)}${aiTag}</span>
         <span class="cat-count-badge">${file.cases.length} मुद्दा</span>
       </div>`;
 
@@ -1588,6 +2523,7 @@ function rebuildCaseList(){
     });
 
     catEl.querySelector('.cat-check-zone').addEventListener('click', e=>e.stopPropagation());
+    catEl.addEventListener('mouseenter', () => scrollRightToFirstCardOfFolder(file.id));
 
     const itemsEl=document.createElement('div');
     itemsEl.className='cat-items'+(isCollapsed?' hidden':'');
@@ -1597,6 +2533,8 @@ function rebuildCaseList(){
       const row=document.createElement('div');
       row.className='item-row'+(selectedIds.has(c.id)?' selected':'');
       row.id='irow-'+c.id;
+      row.classList.add('kw-hover-target');
+      row.dataset.keywords = c.recognition || '';
 
       // Display: petitionNo (caseNo) if both exist, else whichever exists
       const displayNo = c.petitionNo
@@ -1626,12 +2564,17 @@ function rebuildCaseList(){
       row.querySelector('input[type="checkbox"]').addEventListener('change',e=>{
         onCheck(file.id,c.id,e.target.checked);
       });
+      row.addEventListener('mouseenter', (e) => { scrollRightToCaseCard(c.id); showCaseKeywords(e, c.id); });
+      row.addEventListener('mousemove', moveKeywordTip);
+      row.addEventListener('mouseleave', hideKeywordTip);
 
       itemsEl.appendChild(row);
     });
     container.appendChild(itemsEl);
   });
 
+  if(typeof leftSearch !== 'undefined' && leftSearch.query) setTimeout(onLeftSearch, 20);
+  updateMatchToggleButton();
   setTimeout(updateScrollArrows,50);
 }
 
@@ -1670,6 +2613,13 @@ function updateCatCheckbox(fileId){
 
 function updateSelCount(){
   document.getElementById('selCount').textContent=selectedIds.size;
+  updateSelectionToggleButtons();
+}
+
+function toggleSelectAll(){
+  const total = allFiles.reduce((sum,f)=>sum + (f.cases ? f.cases.length : 0), 0);
+  if(total > 0 && selectedIds.size === total) deselectAll();
+  else selectAll();
 }
 
 function selectAll(){
@@ -1700,13 +2650,249 @@ function deselectAll(){
   renderSelectedOrders();
 }
 
+
+
+function escapeHtmlForOrder(txt){
+  return String(txt ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
+function formatOrderText(txt){
+  let out = escapeHtmlForOrder(txt || '(आदेश उपलब्ध छैन)');
+  const rx = /(^|\s|[।,:;()])(निर्णयतर्फ|नियमबमोजिम|तपसिल|तपसील|फिराद|ठहर्छ|बोलिरहन परेन|प्रतिउत्तर|अभियोग|बयान)(?=\s|[।,:;()\n]|$)/g;
+  return out.replace(rx, '$1<strong>$2</strong>');
+}
+
+
+function getCaseKeywordsText(c){
+  if(!c) return '';
+  const raw = String(c.recognition || c.keywords || c.keyword || '').trim();
+  return raw || 'Keywords उपलब्ध छैन।';
+}
+
+function getCaseById(caseId){
+  for(const f of allFiles){
+    if(!f.cases) continue;
+    const c = f.cases.find(x => x.id === caseId);
+    if(c) return c;
+  }
+  return null;
+}
+
+function getFolderKeywordsText(file){
+  if(!file || !file.cases || file.cases.length !== 1) return '';
+  return getCaseKeywordsText(file.cases[0]);
+}
+
+function keywordHoverEnabled(){
+  const chk = document.getElementById('leftKeywordHoverChk');
+  return !!(chk && chk.checked);
+}
+
+function ensureKeywordTip(){
+  let tip = document.getElementById('kw-floating-tip');
+  if(!tip){
+    tip = document.createElement('div');
+    tip.id = 'kw-floating-tip';
+    tip.className = 'kw-floating-tip';
+    document.body.appendChild(tip);
+  }
+  return tip;
+}
+
+function showKeywordTip(e, text, title='Keywords'){
+  if(!text) return;
+  const tip = ensureKeywordTip();
+  tip.innerHTML = `<span class="kw-tip-title">🔑 ${escapeHtmlForOrder(title)}</span>${escapeHtmlForOrder(text)}`;
+  tip.classList.add('show');
+  moveKeywordTip(e);
+}
+
+function moveKeywordTip(e){
+  const tip = document.getElementById('kw-floating-tip');
+  if(!tip || !tip.classList.contains('show')) return;
+  const pad = 14;
+  const x = Math.min(window.innerWidth - tip.offsetWidth - 12, Math.max(12, (e.clientX || 0) + pad));
+  const y = Math.min(window.innerHeight - tip.offsetHeight - 12, Math.max(12, (e.clientY || 0) + pad));
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+
+function hideKeywordTip(){
+  const tip = document.getElementById('kw-floating-tip');
+  if(tip) tip.classList.remove('show');
+}
+
+function showCaseKeywords(e, caseId, force=false){
+  if(!force && !keywordHoverEnabled()) return;
+  const c = getCaseById(caseId);
+  showKeywordTip(e, getCaseKeywordsText(c), 'Keywords');
+}
+
+function showFolderKeywords(e, fileId){
+  if(!keywordHoverEnabled()) return;
+  const file = allFiles.find(f => f.id === fileId);
+  const kw = getFolderKeywordsText(file);
+  if(kw) showKeywordTip(e, kw, 'Folder Keywords');
+}
+
+function toggleKeywordHover(){
+  hideKeywordTip();
+  const enabled = keywordHoverEnabled();
+  document.querySelectorAll('.kw-hover-target').forEach(el=>el.classList.toggle('kw-enabled', enabled));
+  showToast(enabled ? 'KW hover ON' : 'KW hover OFF', 'info');
+}
+
+function showActiveCardKeywords(e){
+  const card = getActiveOrVisibleRightCard();
+  if(!card){ showKeywordTip(e, 'सक्रिय कार्ड छैन।', 'Keywords'); return; }
+  setActiveRightCard(card.dataset.id);
+  const c = getCaseById(card.dataset.id);
+  showKeywordTip(e, getCaseKeywordsText(c), 'Active Card Keywords');
+}
+
 // ═══════════════════════════════════════════════
 // LIVE RENDER — called on every selection change
+// ═══════════════════════════════════════════════
+// RIGHT CARD ↔ LEFT PANEL LINKED HIGHLIGHT
+// ═══════════════════════════════════════════════
+function clearCursorLinkedLeftHighlight(){
+  document.querySelectorAll('.cursor-linked').forEach(el=>el.classList.remove('cursor-linked'));
+}
+function highlightLeftForCase(caseId, shouldScroll=false){
+  clearCursorLinkedLeftHighlight();
+  const file = allFiles.find(f => f.cases && f.cases.some(c => c.id === caseId));
+  if(!file) return;
+  const cat = document.getElementById('cat-'+file.id);
+  const row = document.getElementById('irow-'+caseId);
+  const fileRow = document.querySelector(`.file-row[data-file-id="${file.id}"]`);
+
+  // Always highlight the parent folder/category header, even when its item list is collapsed.
+  if(cat) cat.classList.add('cursor-linked');
+  if(fileRow) fileRow.classList.add('cursor-linked');
+  if(row) row.classList.add('cursor-linked');
+
+  if(shouldScroll){
+    const rowVisible = row && row.offsetParent !== null;
+    const target = rowVisible ? row : (cat || fileRow);
+    if(target) target.scrollIntoView({block:'nearest', behavior:'smooth'});
+  }
+}
+
+function clearRightScrollCue(){
+  document.querySelectorAll('.order-card.right-scroll-cue').forEach(el=>el.classList.remove('right-scroll-cue'));
+}
+
+let activeRightCardId = null;
+function setActiveRightCard(caseId){
+  activeRightCardId = caseId || activeRightCardId;
+  const btn = document.getElementById('activeCardBottomBtn');
+  if(btn) btn.classList.add('visible');
+}
+function getActiveOrVisibleRightCard(){
+  if(activeRightCardId){
+    const active = document.querySelector(`.order-card[data-id="${activeRightCardId}"]`);
+    if(active && active.offsetParent !== null) return active;
+  }
+  const rp = document.getElementById('right-panel');
+  const cards = [...document.querySelectorAll('.order-card[data-id]')].filter(c=>c.offsetParent !== null);
+  if(!rp || !cards.length) return null;
+  const rpRect = rp.getBoundingClientRect();
+  let best = null, bestScore = Infinity;
+  cards.forEach(card=>{
+    const r = card.getBoundingClientRect();
+    const overlap = Math.max(0, Math.min(r.bottom, rpRect.bottom) - Math.max(r.top, rpRect.top));
+    const score = overlap > 0 ? Math.abs(r.top - rpRect.top) : Math.abs(r.top - rpRect.top) + 10000;
+    if(score < bestScore){ bestScore = score; best = card; }
+  });
+  return best;
+}
+function scrollActiveCardTop(){
+  const card = getActiveOrVisibleRightCard();
+  if(!card) return;
+  setActiveRightCard(card.dataset.id);
+  clearRightScrollCue();
+  card.classList.add('right-scroll-cue');
+  card.scrollIntoView({block:'start', behavior:'smooth'});
+  setTimeout(()=>card.classList.remove('right-scroll-cue'), 1400);
+}
+
+function scrollActiveCardBottom(){
+  const card = getActiveOrVisibleRightCard();
+  const rp = document.getElementById('right-panel');
+  if(!card || !rp) return;
+  setActiveRightCard(card.dataset.id);
+  clearRightScrollCue();
+  card.classList.add('right-scroll-cue');
+  const cardRect = card.getBoundingClientRect();
+  const rpRect = rp.getBoundingClientRect();
+  const targetTop = rp.scrollTop + (cardRect.bottom - rpRect.bottom) + 16;
+  rp.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+  setTimeout(()=>card.classList.remove('right-scroll-cue'), 1400);
+}
+
+
+let leftPanelAutoScrollEnabled = true;
+function toggleLeftAutoScroll(){
+  leftPanelAutoScrollEnabled = !leftPanelAutoScrollEnabled;
+  updateLeftAutoScrollBtn();
+  showToast(leftPanelAutoScrollEnabled ? 'Left panel auto-scroll ON' : 'Left panel auto-scroll OFF', 'info');
+}
+function updateLeftAutoScrollBtn(){
+  const btn = document.getElementById('leftAutoScrollBtn');
+  if(!btn) return;
+  btn.classList.toggle('locked', !leftPanelAutoScrollEnabled);
+  btn.textContent = leftPanelAutoScrollEnabled ? '🔓' : '🔒';
+  btn.title = leftPanelAutoScrollEnabled ? 'Left panel hover auto-scroll: ON' : 'Left panel hover auto-scroll: OFF';
+}
+
+function scrollRightToCaseCard(caseId){
+  if(!leftPanelAutoScrollEnabled) return;
+  const card = document.querySelector(`.order-card[data-id="${caseId}"]`);
+  if(!card) return;
+  setActiveRightCard(caseId);
+  clearRightScrollCue();
+  card.classList.add('right-scroll-cue');
+  card.scrollIntoView({block:'start', behavior:'smooth'});
+  setTimeout(()=>card.classList.remove('right-scroll-cue'), 1400);
+}
+
+function scrollRightToFirstCardOfFolder(fileId){
+  if(!leftPanelAutoScrollEnabled) return;
+  const file = allFiles.find(f => f.id === fileId);
+  if(!file || !file.cases || !file.cases.length) return;
+  const firstVisibleCase = file.cases.find(c => document.querySelector(`.order-card[data-id="${c.id}"]`));
+  if(firstVisibleCase) scrollRightToCaseCard(firstVisibleCase.id);
+}
+
+function scrollRightPanelTop(){
+  const rp = document.getElementById('right-panel');
+  if(rp) rp.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateRightBackTopVisibility(){
+  const rp = document.getElementById('right-panel');
+  const btn = document.getElementById('rightBackTopBtn');
+  const bottomBtn = document.getElementById('activeCardBottomBtn');
+  const topBtn = document.getElementById('activeCardTopBtn');
+  const keyBtn = document.getElementById('activeCardKeywordBtn');
+  if(!rp || !btn) return;
+  // Keep floating controls always visible so users can see them in the right panel area.
+  btn.classList.add('visible');
+  btn.style.opacity = rp.scrollTop > 20 ? '1' : '0.72';
+  const hasCard = !!document.querySelector('.order-card[data-id]');
+  if(bottomBtn) bottomBtn.style.opacity = hasCard ? '1' : '0.45';
+  if(topBtn) topBtn.style.opacity = hasCard ? '1' : '0.45';
+  if(keyBtn) keyBtn.style.opacity = hasCard ? '1' : '0.45';
+}
+
 // ═══════════════════════════════════════════════
 function renderSelectedOrders(){
   const area = document.getElementById('results-area');
 
   if(!selectedIds.size){
+    clearCursorLinkedLeftHighlight();
     area.innerHTML=`
       <div class="empty-state">
         <span class="icon">📜</span>
@@ -1769,17 +2955,24 @@ function renderSelectedOrders(){
             <div class="card-case-no">${cardDisplayNo}</div>
             ${c.recognition ? `<div class="card-recognition">🏷 ${c.recognition}</div>` : ''}
           </div>
+          <button class="card-keyword-btn kw-hover-target" onmouseenter="showCaseKeywords(event,'${c.id}',true)" onmousemove="moveKeywordTip(event)" onmouseleave="hideKeywordTip()" title="यस कार्डका Keywords">🔑</button>
           <div class="case-badge">${badgeLabel}</div>
         </div>
         <div class="card-body">
           <h4>${bodyHeading}
-            <button class="copy-order-btn" onclick="copyOrder(this)" title="सम्पूर्ण आदेश प्रतिलिपि गर्नुहोस्"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="9" height="10" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg></button><button class="copy-order-btn copy-body-btn" onclick="copyOrderBody(this)" title="यसमा…गर्नू प्रतिलिपि गर्नुहोस्"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h8M4 9h6M4 12h4"/><rect x="1" y="2" width="14" height="12" rx="1.5"/></svg></button><button class="copy-order-btn download-file-btn" onclick="downloadSourceFile(this)" title="फाइल डाउनलोड गर्नुहोस्"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v10"/><path d="M5 8l3 3 3-3"/><path d="M3 13h10"/></svg></button></h4>
-          <pre class="order-text">${c.order||'(आदेश उपलब्ध छैन)'}</pre>
+            <button class="copy-order-btn" onclick="copyOrder(this)" title="सम्पूर्ण आदेश प्रतिलिपि गर्नुहोस्"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="9" height="10" rx="1.5"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg></button><button class="copy-order-btn download-file-btn" onclick="downloadSourceFile(this)" title="फाइल डाउनलोड गर्नुहोस्"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v10"/><path d="M5 8l3 3 3-3"/><path d="M3 13h10"/></svg></button></h4>
+          <pre class="order-text">${formatOrderText(c.order)}</pre>
         </div>
         <div class="card-footer">
           <span>📅 इति संवत् ${c.date||'—'} रोज १ शुभम्</span>
           <span class="judge-name">⚖️ ${c.judge||'न्यायाधीश'}</span>
         </div>`;
+
+      card.addEventListener('mouseenter', () => { setActiveRightCard(c.id); highlightLeftForCase(c.id, true); });
+      card.addEventListener('mousemove', () => { setActiveRightCard(c.id); highlightLeftForCase(c.id, false); });
+      card.addEventListener('mouseleave', clearCursorLinkedLeftHighlight);
+      card.addEventListener('click', () => setActiveRightCard(c.id));
+      card.addEventListener('focusin', () => { setActiveRightCard(c.id); highlightLeftForCase(c.id, true); });
 
       insertAfter.after(card);
       insertAfter = card;
@@ -1950,7 +3143,7 @@ const NepaliNormalizer = {
 // ═══════════════════════════════════════════════
 // SEARCH STATE
 // ═══════════════════════════════════════════════
-const leftSearch  = { query:'', useNorm:false, hits:[], cur:0 };
+const leftSearch  = { query:'', useNorm:false, mode:'both', hits:[], cur:0, matchedCaseIds:new Set(), matchedFileIds:new Set() };
 const rightSearch = { query:'', useNorm:false, filter:false, hits:[], cur:0, _rtTimer:null };
 
 function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
@@ -2071,19 +3264,64 @@ function updateCountBadge(el, cur, total){
 // ════════════════════════════════════════════════════════
 // LEFT PANEL SEARCH
 // ════════════════════════════════════════════════════════
+function setLeftSearchMode(mode){
+  const ids = {both:'leftBothChk', folder:'leftFolderChk', files:'leftFilesChk'};
+  Object.entries(ids).forEach(([m,id])=>{ const el=document.getElementById(id); if(el) el.checked = (m===mode); });
+  leftSearch.mode = mode;
+  onLeftSearch();
+}
+function getLeftSearchMode(){
+  const both=document.getElementById('leftBothChk');
+  const folder=document.getElementById('leftFolderChk');
+  const files=document.getElementById('leftFilesChk');
+  if(folder && folder.checked) return 'folder';
+  if(files && files.checked) return 'files';
+  if(both) both.checked = true;
+  return 'both';
+}
+function toggleSelectLeftSearchMatches(){
+  if(!leftSearch.matchedCaseIds || !leftSearch.matchedCaseIds.size){
+    showToast('पहिले देब्रे खोजमा मिलेको नतिजा ल्याउनुहोस्','info');
+    return;
+  }
+  const matched = [...leftSearch.matchedCaseIds];
+  const onlyMatchedSelected = selectedIds.size===matched.length && matched.every(id=>selectedIds.has(id));
+  deselectAll();
+  if(onlyMatchedSelected){
+    showToast('✓ मिलेको चयन हटाइयो','success');
+    return;
+  }
+  matched.forEach(id=>selectedIds.add(id));
+  allFiles.forEach(f=>{
+    f.cases.forEach(c=>{
+      const on = selectedIds.has(c.id);
+      const chk=document.getElementById('chk-'+c.id);
+      if(chk) chk.checked=on;
+      document.getElementById('irow-'+c.id)?.classList.toggle('selected',on);
+    });
+    updateCatCheckbox(f.id);
+  });
+  updateSelCount();
+  renderSelectedOrders();
+  showToast(`✓ ${matched.length} मिलेको मुद्दा मात्र छानियो`,'success');
+}
 function onLeftSearch(){
   const inp        = document.getElementById('leftSearchInput');
   const norm       = document.getElementById('leftNormChk').checked;
-  const folderOnly = document.getElementById('leftFolderChk').checked;
+  const mode       = getLeftSearchMode();
   const q          = inp.value.trim();
   leftSearch.query   = q;
   leftSearch.useNorm = norm;
+  leftSearch.mode    = mode;
+  leftSearch.matchedCaseIds = new Set();
+  leftSearch.matchedFileIds = new Set();
   inp.classList.toggle('has-query', !!q);
 
   document.querySelectorAll('#caseList mark.sh').forEach(m=>m.replaceWith(document.createTextNode(m.textContent)));
   document.querySelectorAll('#caseList').forEach(el=>el.normalize());
   document.querySelectorAll('.item-row').forEach(r=>r.classList.remove('search-hidden','search-match'));
   document.querySelectorAll('.cat-header').forEach(h=>h.classList.remove('search-hidden'));
+  document.querySelectorAll('.cat-items').forEach(h=>h.classList.remove('search-hidden'));
   leftSearch.hits = [];
   leftSearch.cur  = 0;
 
@@ -2094,75 +3332,91 @@ function onLeftSearch(){
     updateCountBadge(countEl, 0, null);
     document.getElementById('leftNavPrev').disabled = true;
     document.getElementById('leftNavNext').disabled = true;
+    updateMatchToggleButton();
+    setTimeout(updateScrollArrows, 50);
+    _refreshOptsDots();
     return;
   }
 
-  const normQ = maybeNorm(q, norm);
+  const normQ = maybeNorm(q, norm).toLowerCase();
+  const searchFolders = mode==='both' || mode==='folder';
+  const searchFiles   = mode==='both' || mode==='files';
 
-  if(folderOnly){
-    allFiles.forEach(file=>{
-      const catEl = document.getElementById('cat-'+file.id);
-      if(!catEl) return;
-      const labelEl = catEl.querySelector('.cat-file-name');
-      const labelText = maybeNorm(labelEl ? (labelEl.textContent||'') : file.label, norm);
-      const matches = labelText.toLowerCase().includes(normQ.toLowerCase());
+  allFiles.forEach(file=>{
+    let fileHasMatch = false;
+    let folderMatched = false;
 
-      if(!matches){
-        catEl.classList.add('search-hidden');
-        document.getElementById('items-'+file.id)?.classList.add('search-hidden');
-        return;
-      }
-      catEl.classList.remove('search-hidden');
-      document.getElementById('items-'+file.id)?.classList.remove('search-hidden');
-      if(labelEl){
-        const marks = highlightInElement(labelEl, normQ, norm, 'sh');
+    const catEl = document.getElementById('cat-'+file.id);
+    const itemsEl = document.getElementById('items-'+file.id);
+    const labelEl = catEl ? catEl.querySelector('.cat-file-name') : null;
+
+    if(searchFolders && labelEl){
+      const labelText = maybeNorm(labelEl.textContent || file.label || '', norm).toLowerCase();
+      folderMatched = labelText.includes(normQ);
+      if(folderMatched){
+        fileHasMatch = true;
+        leftSearch.matchedFileIds.add(file.id);
+        file.cases.forEach(c=>leftSearch.matchedCaseIds.add(c.id));
+        const marks = highlightInElement(labelEl, q, norm, 'sh');
         leftSearch.hits.push(...marks);
       }
-    });
-  } else {
-    allFiles.forEach(file=>{
-      let fileHasMatch = false;
-      file.cases.forEach(c=>{
-        const row = document.getElementById('irow-'+c.id);
-        if(!row) return;
+    }
 
+    file.cases.forEach(c=>{
+      const row = document.getElementById('irow-'+c.id);
+      if(!row) return;
+
+      let rowMatched = false;
+      if(searchFiles){
         // Search: caseNo + petitionNo + type + subject + recognition
         const fields = [c.caseNo||'', c.petitionNo||'', c.type||'', c.subject||'', c.recognition||''].join(' ');
-        const testStr = maybeNorm(fields, norm);
-        const matches = testStr.toLowerCase().includes(normQ.toLowerCase());
+        rowMatched = maybeNorm(fields, norm).toLowerCase().includes(normQ);
+      }
 
-        if(!matches){
-          row.classList.add('search-hidden');
-          return;
-        }
-        row.classList.remove('search-hidden');
-        row.classList.add('search-match');
-        fileHasMatch = true;
+      const visible = folderMatched || rowMatched;
+      if(!visible){
+        row.classList.add('search-hidden');
+        return;
+      }
 
+      row.classList.remove('search-hidden');
+      row.classList.add('search-match');
+      fileHasMatch = true;
+
+      if(rowMatched){
+        leftSearch.matchedCaseIds.add(c.id);
         const content = row.querySelector('.item-content');
         if(content){
-          const marks = highlightInElement(content, normQ, norm, 'sh');
+          const marks = highlightInElement(content, q, norm, 'sh');
           leftSearch.hits.push(...marks);
         }
-      });
-
-      if(fileHasMatch && catCollapsed[file.id]){
-        catCollapsed[file.id]=false;
-        document.getElementById('cat-'+file.id)?.classList.remove('collapsed');
-        document.getElementById('items-'+file.id)?.classList.remove('hidden');
       }
     });
-  }
+
+    if(!fileHasMatch){
+      catEl?.classList.add('search-hidden');
+      itemsEl?.classList.add('search-hidden');
+      return;
+    }
+
+    catEl?.classList.remove('search-hidden');
+    itemsEl?.classList.remove('search-hidden');
+    if(catCollapsed[file.id]){
+      catCollapsed[file.id]=false;
+      catEl?.classList.remove('collapsed');
+      itemsEl?.classList.remove('hidden');
+    }
+  });
 
   leftSearch.cur = 0;
   if(leftSearch.hits.length) setActiveMark(leftSearch.hits, 0);
   updateCountBadge(countEl, leftSearch.cur, leftSearch.hits.length);
   document.getElementById('leftNavPrev').disabled = leftSearch.hits.length < 2;
   document.getElementById('leftNavNext').disabled = leftSearch.hits.length < 2;
+  updateMatchToggleButton();
   setTimeout(updateScrollArrows, 50);
   _refreshOptsDots();
 }
-
 function leftSearchNav(dir){
   if(!leftSearch.hits.length) return;
   leftSearch.cur = (leftSearch.cur + dir + leftSearch.hits.length) % leftSearch.hits.length;
@@ -2318,7 +3572,56 @@ function rsExtractAtoms(expr) {
 /* Parse user input into a RegExp.
    Accepts /pattern/flags  OR  raw pattern (flags default: gi + unicode).
    Returns { re: RegExp, valid: bool, error: string|null }                */
-function rsParseRegex(raw) {
+function rsNormalizeRegexSourceToOriginalPattern(src) {
+  /*
+    Right-panel global Nepali normalization for REGEX mode.
+    We do NOT normalize the displayed/card text; instead we expand the user's
+    normalized Nepali regex literals into original-text character classes.
+    This preserves exact DOM positions for highlight while making regex search
+    obey the same "स — सामान्यीकरण" checkbox used by keyword/general/filter.
+  */
+  if (!src) return src;
+
+  const normalized = NepaliNormalizer.normalize(src);
+  let out = '';
+
+  for (let i = 0; i < normalized.length; i++) {
+    const ch = normalized[i];
+
+    // Keep escaped regex tokens/literals as the user wrote them.
+    if (ch === '\\') {
+      out += ch;
+      if (i + 1 < normalized.length) out += normalized[++i];
+      continue;
+    }
+
+    // Keep character classes intact: [क-ह], [^०-९], etc.
+    if (ch === '[') {
+      let cls = ch;
+      i++;
+      while (i < normalized.length) {
+        cls += normalized[i];
+        if (normalized[i] === ']' && normalized[i - 1] !== '\\') break;
+        i++;
+      }
+      out += cls;
+      continue;
+    }
+
+    // The normalizer maps anusvara to two chars: न्. Match either original.
+    if (ch === 'न' && normalized[i + 1] === '्') {
+      out += '(?:न्|ं)';
+      i++;
+      continue;
+    }
+
+    out += _N2O[ch] !== undefined ? _N2O[ch] : ch;
+  }
+
+  return out;
+}
+
+function rsParseRegex(raw, useNorm=false) {
   const slashMatch = raw.match(/^\/(.+)\/([gimsuy]*)$/);
   if (slashMatch) {
     try {
@@ -2326,14 +3629,16 @@ function rsParseRegex(raw) {
       let flags = slashMatch[2];
       if (!flags.includes('g')) flags += 'g';
       if (!flags.includes('u') && !flags.includes('s')) flags += 'u';
-      return { re: new RegExp(slashMatch[1], flags), valid: true, error: null };
+      const src = useNorm ? rsNormalizeRegexSourceToOriginalPattern(slashMatch[1]) : slashMatch[1];
+      return { re: new RegExp(src, flags), valid: true, error: null };
     } catch(e) {
       return { re: null, valid: false, error: e.message };
     }
   }
   // Raw pattern — wrap as-is with gi flags
   try {
-    return { re: new RegExp(raw, 'giu'), valid: true, error: null };
+    const src = useNorm ? rsNormalizeRegexSourceToOriginalPattern(raw) : raw;
+    return { re: new RegExp(src, 'giu'), valid: true, error: null };
   } catch(e) {
     return { re: null, valid: false, error: e.message };
   }
@@ -2429,7 +3734,7 @@ function onRightSearch() {
 
   /* ── MODE 1: REGEX ─────────────────────────────────── */
   if (useRegex) {
-    const { re, valid, error } = rsParseRegex(q);
+    const { re, valid, error } = rsParseRegex(q, useNorm);
     if (!valid) {
       // Show error in count badge area
       countEl.textContent = 'Regex त्रुटि';
@@ -2456,7 +3761,7 @@ function onRightSearch() {
       const hlEl = (keyword && !general) ? card.querySelector('.card-recognition') : card;
       if (hlEl) {
         // Fresh RegExp for highlight (need new instance for lastIndex safety)
-        const { re: re2 } = rsParseRegex(q);
+        const { re: re2 } = rsParseRegex(q, useNorm);
         const marks = rsHighlightRegex(hlEl, re2, 'sh');
         rightSearch.hits.push(...marks);
       }
@@ -2555,7 +3860,11 @@ function optsResetChks(panel){
       : (_optsAllOn[panel] ? 'Reset2 ✓' : 'Reset2');
   }
 
-  if(panel==='left')  onLeftSearch();
+  if(panel==='left')  {
+    // Keep left search mode mutually exclusive even when Reset1 toggles all checkboxes.
+    if(_optsAllOn[panel]) setLeftSearchMode('both');
+    else onLeftSearch();
+  }
   else                onRightSearch();
 
   updateOptsDot(wrapId);
@@ -2685,7 +3994,15 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
+function scheduleInitialLoad(){
+  setTimeout(() => loadAllFiles(false), 120);
+  window.addEventListener('load', () => {
+    const latest = getLoadableScriptSources().length;
+    if(!allFiles.length || latest > _lastDiscoveredSourceCount) setTimeout(() => loadAllFiles(false), 120);
+  });
+}
+if(document.readyState === 'loading') window.addEventListener('DOMContentLoaded', scheduleInitialLoad);
+else scheduleInitialLoad();
 </script>
 
 <!-- ════════════════════════════════════════════
@@ -2693,7 +4010,7 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
      Place files in the same folder as index.html (or use a remote URL)
 
      .txt   → parsed by AI (Claude Haiku) or structural regex
-     .doc/.docx → extracted as plain text (best with .docx; .doc is best-effort)
+     .doc/.docx/.rtf/.pdf → extracted as plain text (best with .docx; .doc is best-effort)
      .json  → loaded directly (same structure as ⬇ JSON export)
               { "label": "...", "cases": [ { caseNo, petitionNo,
                 type, subject, court, judge, date, order, recognition } ] }
@@ -2711,9 +4028,9 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु एकतर्फी २०६४ देखि अलग २०६८ मा अंश भरपाई गरिदिएको.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु दुई तर्फी २०६० मा अंशबण्डा वादीको साक्षीको बकपत्रलाई आधार लिइएको.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार गरेकोले.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार.doc"></script>
+<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु सम्बन्ध राम्रो नरहेको र लगाउको अंश मुद्दामा दावी पुग्ने भएकोले.doc"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु १ तर्फी अंश मुद्दा फैसला भएकोले.doc"></script>
+<script src="DOCS\सम्बन्ध विच्छेद\०७८-CP-१५८१,सम्बन्ध वि केटा वादी दापु १ तर्फी अंश मुद्दा फैसला भएकोले.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु १ तर्फी केटी बाले बिहे भएको बकपत्र.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु १ तर्फी पहिले पनि सवि मुद्दा दिएको, अंश दावी गरेमा हुने गरी सवि हुने.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु २ तर्फी.docx"></script>
@@ -2724,6 +4041,7 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद १ तर्फी साक्षी अनुपस्तित दावी नपुग्ने.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/०६७-CR-०७२६,सअ, सम्बन्धविच्छेद (केटाले दायर गरेको), दावी नपुग्ने-उल्टी-उल्टी भई सुरू सदर.docx"></script>
+<!-- Example external link: <script src="https://example.com/अन्य आदेश.json"></script> -->
 
 <!-- Example external link: <script src="https://example.com/अन्य आदेश.json"></script> -->
 
@@ -2823,7 +4141,7 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
           <p class="readme-p">HTML फाइलको तलतिर <span class="readme-code">&lt;script src="DOCS/2080.01.03.json"&gt;</span> ट्यागहरू थपेर फाइलहरू लोड गरिन्छ। समर्थित ढाँचाहरू:</p>
           <ul class="readme-ul">
             <li><span class="readme-code">.json</span> — तयारी डेटा, सिधै लोड (AI नचाहिने)</li>
-            <li><span class="readme-code">.txt / .docx / .doc</span> — Claude Haiku AI ले पार्स गर्छ (API चाहिन्छ)</li>
+            <li><span class="readme-code">.txt / .doc / .docx / .rtf / .pdf</span> — Claude Haiku AI ले पार्स गर्छ (API चाहिन्छ)</li>
           </ul>
           <div id="sec-json-schema">
             <div class="readme-h2">📋 JSON ढाँचा</div>
@@ -2860,7 +4178,7 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
               <li>फाइल नामको बायाँ <strong>checkbox</strong> — त्यस फाइलका सबै मुद्दा एकैपटक छान्छ/हटाउँछ</li>
               <li>फाइल नाममा क्लिक — मुद्दाहरू खोल्छ/बन्द गर्छ</li>
               <li>प्रत्येक मुद्दाको checkbox — एक-एक छान्न</li>
-              <li><span class="readme-code">सबै छान्नुहोस्</span> / <span class="readme-code">सबै हटाउनुहोस्</span> — द्रुत छनोट</li>
+              <li><span class="readme-code">सबै छान्नुहोस्/हटाउनुहोस्</span> — एउटै toggle बटनबाट द्रुत छनोट</li>
               <li>छानिएका मुद्दा दाँयामा तुरुन्त देखिन्छन् (<strong>LIVE</strong>)</li>
             </ul>
           </div>
@@ -2936,7 +4254,6 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
             <li><span class="readme-code">⬇ JSON</span> (फाइल row मा) — एकल फाइल JSON डाउनलोड</li>
             <li><span class="readme-code">⬇ ZIP</span> (प्यानल topbar मा) — सबै फाइलका JSON एउटा ZIP मा</li>
             <li><span class="readme-code">📋</span> (कार्डमा) — सम्पूर्ण आदेश clipboard मा</li>
-            <li><span class="readme-code">📄</span> (कार्डमा) — मुख्य आदेश अंश मात्र (यसमा…गर्नू)</li>
             <li><span class="readme-code">⬇</span> (कार्डमा) — स्रोत फाइल डाउनलोड</li>
           </ul>
         </div>
@@ -2968,6 +4285,67 @@ window.addEventListener('DOMContentLoaded',()=>setTimeout(loadAllFiles,100));
     </div><!-- /readme-body -->
   </div><!-- /readme-modal -->
 </div><!-- /readme-overlay -->
+
+<script>
+/* ═══════════════════════════════════════
+   MOBILE/TABLET RESPONSIVE BEHAVIOR PATCH
+   Overrides only panel wide-toggle behavior on narrow screens.
+═══════════════════════════════════════ */
+(function(){
+  function isNarrowLayout(){
+    return window.matchMedia && window.matchMedia('(max-width: 820px)').matches;
+  }
+
+  window.togglePanelWide = function(){
+    const btn = document.getElementById('panelExpandBtn');
+    const panel = document.getElementById('left-panel');
+    if(!panel) return;
+
+    if(typeof panelExpanded !== 'undefined' && !panelExpanded && typeof toggleLeftPanel === 'function') {
+      toggleLeftPanel();
+    }
+
+    if(isNarrowLayout()){
+      panelWide = !panelWide;
+      document.body.classList.toggle('mobile-left-wide', panelWide);
+      if(btn){
+        btn.classList.toggle('active', panelWide);
+        btn.textContent = panelWide ? '⇲' : '⇱';
+        btn.title = panelWide ? 'देब्रे panel सामान्य उचाइमा फर्काउनुहोस्' : 'देब्रे panel ठूलो बनाउनुहोस् / फर्काउनुहोस्';
+      }
+      setTimeout(function(){
+        if(typeof updateScrollArrows === 'function') updateScrollArrows();
+      }, 320);
+      return;
+    }
+
+    document.body.classList.remove('mobile-left-wide');
+    if(!panelWide){
+      if(typeof setLeftPanelWidth === 'function') setLeftPanelWidth(Math.floor(window.innerWidth * 0.9));
+      panelWide = true;
+      if(btn){
+        btn.classList.add('active');
+        btn.textContent = '⇲';
+        btn.title = 'देब्रे panel सामान्य आकारमा फर्काउनुहोस्';
+      }
+    } else {
+      if(typeof setLeftPanelWidth === 'function') setLeftPanelWidth(390);
+      panelWide = false;
+      if(btn){
+        btn.classList.remove('active');
+        btn.textContent = '⇱';
+        btn.title = 'देब्रे panel 90% सम्म फैलाउनुहोस् / फर्काउनुहोस्';
+      }
+    }
+  };
+
+  window.addEventListener('resize', function(){
+    if(!isNarrowLayout()) document.body.classList.remove('mobile-left-wide');
+    if(typeof updateRightBackTopVisibility === 'function') updateRightBackTopVisibility();
+    if(typeof updateScrollArrows === 'function') updateScrollArrows();
+  }, {passive:true});
+})();
+</script>
 
 </body>
 </html>
