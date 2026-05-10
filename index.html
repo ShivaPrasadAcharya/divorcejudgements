@@ -684,10 +684,11 @@
   .search-clear {
     position: absolute; right: 5px;
     background: none; border: none; cursor: pointer; padding: 1px 2px;
-    color: rgba(240,216,150,0.5); line-height: 1; font-size: 0.72rem; display: none;
+    color: rgba(240,216,150,0.5); line-height: 1; font-size: 0.82rem; display: none;
+    font-weight: 700; transform-origin: center;
   }
   .search-input.has-query ~ .search-clear { display: block; }
-  .search-clear:hover { color: var(--gold-light); }
+  .search-clear:hover { color: var(--gold-light); transform: rotate(28deg); }
 
   .search-nav-btn {
     background: none; border: 1px solid rgba(184,134,42,0.35); border-radius: 3px;
@@ -1322,7 +1323,7 @@
     <div class="search-input-wrap">
       <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg>
       <input type="text" class="search-input" id="leftSearchInput" placeholder="मुद्दा खोज्नुहोस्…" oninput="onLeftSearch()" onkeydown="searchKeyNav(event,'left')">
-      <button class="search-clear" onclick="clearLeftSearch()">✕</button>
+      <button class="search-clear" onclick="clearLeftSearch()" title="खोज refresh/reset गर्नुहोस्">↻</button>
     </div>
     <button class="search-nav-btn" id="leftNavPrev" onclick="leftSearchNav(-1)" disabled>‹</button>
     <button class="search-nav-btn" id="leftNavNext" onclick="leftSearchNav(1)"  disabled>›</button>
@@ -1351,7 +1352,7 @@
         placeholder="खोज्नुहोस्… (| OR  || AND  ||| NOT  /regex/)"
         oninput="onRightSearchRT()"
         onkeydown="searchKeyNav(event,'right')">
-      <button class="search-clear" onclick="clearRightSearch()">✕</button>
+      <button class="search-clear" onclick="clearRightSearch()" title="खोज refresh/reset गर्नुहोस्">↻</button>
     </div>
     <button class="search-nav-btn" id="rightNavPrev" onclick="rightSearchNav(-1)" disabled>‹</button>
     <button class="search-nav-btn" id="rightNavNext" onclick="rightSearchNav(1)"  disabled>›</button>
@@ -1365,11 +1366,12 @@
         <label class="srch-opt-row" title="नमिलेका कार्डहरू लुकाउनुहोस्"><input type="checkbox" id="rightFilterChk" checked onchange="onRightSearch()"><span>फि — फिल्टर</span></label>
         <label class="srch-opt-row" title="सम्पूर्ण कार्ड टेक्स्टमा खोज (किवर्ड मोड override गर्छ)"><input type="checkbox" id="rightGeneralChk" onchange="onRightSearch()"><span>🔍 सामान्य खोज</span></label>
         <label class="srch-opt-row" title="Regular Expression खोज — /pattern/ ढाँचामा लेख्नुहोस् (.*? greedy/non-greedy)"><input type="checkbox" id="rightRegexChk" checked onchange="onRightSearch()"><span>🔣 Regex खोज</span></label>
+        <label class="srch-opt-row" title="दाहिने कार्ड/कार्डहरूमा user ले highlight गरेको अंशभित्र मात्र खोज्छ; text select नभएमा सामान्य right search चल्छ"><input type="checkbox" id="rightSelectedTextChk" onchange="onRightSearch()"><span>▣ Selected Text Only</span></label>
         <div class="srch-opt-divider"></div>
         <div style="padding:0.15rem 0.2rem;font-size:0.6rem;color:rgba(240,216,150,0.45);line-height:1.5">
           किवर्ड: | OR &nbsp; || AND &nbsp; ||| NOT<br>
           ब्र्याकेट: (क||ख)|||ग<br>
-          Regex: /पूर्ण.*?सदर/i &nbsp; /वादी.+?पुग्ने/
+          Regex: /पूर्ण.*?सदर/i &nbsp; /वादी.+?पुग्ने/<br>Selected Text Only: highlight गरेको अंशमा मात्र
         </div>
         <div class="srch-opt-divider"></div>
         <div class="srch-opt-btns">
@@ -3187,7 +3189,7 @@ const NepaliNormalizer = {
 // SEARCH STATE
 // ═══════════════════════════════════════════════
 const leftSearch  = { query:'', useNorm:false, mode:'both', hits:[], cur:0, matchedCaseIds:new Set(), matchedFileIds:new Set() };
-const rightSearch = { query:'', useNorm:false, filter:false, hits:[], cur:0, _rtTimer:null };
+const rightSearch = { query:'', useNorm:false, filter:false, selectedOnly:false, selectedText:'', hits:[], cur:0, _rtTimer:null, selectedScope:null };
 
 function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
@@ -3742,6 +3744,336 @@ function onRightSearchRT() {
   }
 }
 
+
+/* ══ SELECTED-TEXT SEARCH HELPERS ═════════════════════
+   When enabled, right-panel search is evaluated only against the text the user
+   has highlighted inside #results-area. If no valid right-panel selection is
+   present, the normal right-panel search path is used unchanged. */
+
+function rsTextNodesInCard(card) {
+  const nodes = [];
+  if (!card) return nodes;
+  const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT, {
+    acceptNode(n) {
+      if (!n.nodeValue) return NodeFilter.FILTER_REJECT;
+      if (n.parentElement && n.parentElement.tagName === 'MARK') return NodeFilter.FILTER_SKIP;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  return nodes;
+}
+
+function rsCollectSelectedOffsetSnapshot(card, ranges) {
+  const nodes = rsTextNodesInCard(card);
+  const intervals = [];
+  const parts = [];
+  let global = 0;
+
+  for (const node of nodes) {
+    const txt = node.nodeValue || '';
+    const len = txt.length;
+    for (const r of ranges || []) {
+      try {
+        if (!r.intersectsNode(node)) continue;
+        let start = 0, end = len;
+        if (r.startContainer === node) start = Math.max(0, Math.min(len, r.startOffset));
+        if (r.endContainer === node)   end   = Math.max(0, Math.min(len, r.endOffset));
+        if (end > start) intervals.push({ start: global + start, end: global + end });
+      } catch(e) {}
+    }
+    global += len;
+  }
+
+  const merged = rsMergeIntervals(intervals);
+  if (merged.length) {
+    let pos = 0;
+    for (const node of nodes) {
+      const txt = node.nodeValue || '';
+      const nodeStart = pos, nodeEnd = pos + txt.length;
+      for (const it of merged) {
+        const a = Math.max(nodeStart, it.start), b = Math.min(nodeEnd, it.end);
+        if (b > a) parts.push(txt.slice(a - nodeStart, b - nodeStart));
+      }
+      pos = nodeEnd;
+    }
+  }
+
+  return { intervals: merged, text: parts.join('').replace(/\s+/g, ' ').trim() };
+}
+
+function rsCloneSelectedScope(scope) {
+  if (!scope) return null;
+  return {
+    enabled: !!scope.enabled,
+    active: !!scope.active,
+    text: scope.text || '',
+    cardTexts: new Map(scope.cardTexts || []),
+    cardIds: new Set(scope.cardIds || []),
+    cardOffsets: new Map(scope.cardOffsets || []),
+    ranges: scope.ranges || [],
+    persisted: !!scope.persisted
+  };
+}
+
+function rsGetRightSelectionSnapshot() {
+  const chk = document.getElementById('rightSelectedTextChk');
+  if (!chk || !chk.checked) return { enabled:false, active:false, text:'', cardTexts:new Map(), cardIds:new Set(), cardOffsets:new Map(), ranges:[] };
+
+  const root = document.getElementById('results-area');
+  const sel = window.getSelection ? window.getSelection() : null;
+  if (!root || !sel || sel.rangeCount === 0 || sel.isCollapsed) {
+    const saved = rsCloneSelectedScope(rightSearch.selectedScope);
+    if (saved && saved.active) { saved.persisted = true; return saved; }
+    return { enabled:true, active:false, text:'', cardTexts:new Map(), cardIds:new Set(), cardOffsets:new Map(), ranges:[] };
+  }
+
+  const ranges = [];
+  for (let i=0; i<sel.rangeCount; i++) {
+    const r = sel.getRangeAt(i);
+    const common = r.commonAncestorContainer;
+    if (root.contains(common.nodeType === 1 ? common : common.parentNode)) ranges.push(r.cloneRange());
+  }
+  if (!ranges.length) {
+    const saved = rsCloneSelectedScope(rightSearch.selectedScope);
+    if (saved && saved.active) { saved.persisted = true; return saved; }
+    return { enabled:true, active:false, text:'', cardTexts:new Map(), cardIds:new Set(), cardOffsets:new Map(), ranges:[] };
+  }
+
+  const cardTexts = new Map();
+  const cardIds = new Set();
+  const cardOffsets = new Map();
+  let wholeText = '';
+
+  document.querySelectorAll('.order-card[data-id]').forEach(card => {
+    const offSnap = rsCollectSelectedOffsetSnapshot(card, ranges);
+    const text = (offSnap.text || '').replace(/\s+/g, ' ').trim();
+    if (text) {
+      cardTexts.set(card.dataset.id, text);
+      cardIds.add(card.dataset.id);
+      cardOffsets.set(card.dataset.id, offSnap.intervals || []);
+      wholeText += ' ' + text;
+    }
+  });
+
+  wholeText = wholeText.replace(/\s+/g, ' ').trim();
+  const snap = { enabled:true, active:!!wholeText, text:wholeText, cardTexts, cardIds, cardOffsets, ranges };
+  if (snap.active) rightSearch.selectedScope = rsCloneSelectedScope(snap);
+  return snap;
+}
+
+function rsCountLiteralInText(text, query, useNorm) {
+  const hay = (useNorm ? NepaliNormalizer.normalize(text) : text).toLowerCase();
+  const needle = (useNorm ? NepaliNormalizer.normalize(query) : query).toLowerCase();
+  if (!needle) return 0;
+  let n = 0, pos = 0;
+  while ((pos = hay.indexOf(needle, pos)) !== -1) { n++; pos += Math.max(needle.length, 1); }
+  return n;
+}
+
+function rsCollectVirtualHitsFromSelectedText(text, query, useNorm, useRegex) {
+  const hits = [];
+  if (!text || !query) return hits;
+  if (useRegex) {
+    const { re, valid } = rsParseRegex(query, useNorm);
+    if (!valid || !re) return hits;
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      if (m[0].length === 0) { re.lastIndex++; continue; }
+      hits.push({ _virtual:true, text:m[0] });
+    }
+    return hits;
+  }
+  const total = rsCountLiteralInText(text, query, useNorm);
+  for (let i=0; i<total; i++) hits.push({ _virtual:true, text:query });
+  return hits;
+}
+
+function rsSelectedKeywordMatchedText(query, selectedText, useNorm) {
+  // Reuse existing keyword matcher, but apply it to comma-style selected text.
+  // This supports | OR, || AND, ||| NOT, and brackets in selected-text mode too.
+  try { return rsBuildMatcher(query, useNorm)(selectedText); }
+  catch(e) { return false; }
+}
+
+
+/* Highlight matches ONLY inside the user's selected text ranges.
+   This preserves the selected-text search scope while still enabling
+   count, active highlight, and previous/next navigation. */
+function rsLiteralRegexForSelected(query, useNorm) {
+  if (!query) return null;
+  try {
+    const src = useNorm ? normQueryToOrigPattern(NepaliNormalizer.normalize(query)) : escRe(query);
+    return new RegExp(src, 'giu');
+  } catch(e) { return null; }
+}
+
+function rsMergeIntervals(list) {
+  const arr = list.filter(x => x && x.end > x.start).sort((a,b) => a.start - b.start || b.end - a.end);
+  const out = [];
+  for (const x of arr) {
+    const last = out[out.length - 1];
+    if (!last || x.start > last.end) out.push({ start:x.start, end:x.end });
+    else if (x.end > last.end) last.end = x.end;
+  }
+  return out;
+}
+
+function rsCollectSelectedNodeIntervals(card, ranges, regexes) {
+  const nodeMap = new Map();
+  if (!card || !ranges || !ranges.length || !regexes || !regexes.length) return nodeMap;
+
+  const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT, {
+    acceptNode(n) {
+      if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (n.parentElement && n.parentElement.tagName === 'MARK') return NodeFilter.FILTER_SKIP;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+
+  for (const node of nodes) {
+    const orig = node.nodeValue || '';
+    if (!orig) continue;
+    const selectedParts = [];
+
+    for (const r of ranges) {
+      try {
+        if (!r.intersectsNode(node)) continue;
+        let start = 0, end = orig.length;
+        if (r.startContainer === node) start = Math.max(0, Math.min(orig.length, r.startOffset));
+        if (r.endContainer === node)   end   = Math.max(0, Math.min(orig.length, r.endOffset));
+        if (end > start) selectedParts.push({ start, end });
+      } catch(e) {}
+    }
+
+    const selected = rsMergeIntervals(selectedParts);
+    if (!selected.length) continue;
+
+    const matches = [];
+    for (const part of selected) {
+      const slice = orig.slice(part.start, part.end);
+      for (const baseRe of regexes) {
+        if (!baseRe) continue;
+        const flags = baseRe.flags.includes('g') ? baseRe.flags : baseRe.flags + 'g';
+        let re;
+        try { re = new RegExp(baseRe.source, flags); } catch(e) { continue; }
+        re.lastIndex = 0;
+        let m;
+        while ((m = re.exec(slice)) !== null) {
+          if (m[0].length === 0) { re.lastIndex++; continue; }
+          matches.push({ start: part.start + m.index, end: part.start + m.index + m[0].length });
+        }
+      }
+    }
+
+    const merged = rsMergeIntervals(matches);
+    if (merged.length) nodeMap.set(node, merged);
+  }
+  return nodeMap;
+}
+
+function rsApplySelectedIntervals(nodeMap, cls='sh') {
+  const marks = [];
+  // Reverse document order is safest when replacing existing text nodes.
+  const entries = [...nodeMap.entries()].reverse();
+  for (const [node, segs] of entries) {
+    if (!node.parentNode) continue;
+    const orig = node.nodeValue || '';
+    const frag = document.createDocumentFragment();
+    let pos = 0;
+    for (const seg of segs) {
+      if (seg.start > pos) frag.appendChild(document.createTextNode(orig.slice(pos, seg.start)));
+      const mark = document.createElement('mark');
+      mark.className = cls;
+      mark.textContent = orig.slice(seg.start, seg.end);
+      frag.appendChild(mark);
+      marks.push(mark);
+      pos = seg.end;
+    }
+    if (pos < orig.length) frag.appendChild(document.createTextNode(orig.slice(pos)));
+    node.parentNode.replaceChild(frag, node);
+  }
+  return marks.reverse();
+}
+
+
+function rsHighlightSelectedCardOffsets(card, intervals, query, useNorm, useRegex) {
+  const regexes = [];
+  if (useRegex) {
+    const parsed = rsParseRegex(query, useNorm);
+    if (parsed.valid && parsed.re) regexes.push(parsed.re);
+  } else {
+    const re = rsLiteralRegexForSelected(query, useNorm);
+    if (re) regexes.push(re);
+  }
+  return rsApplySelectedOffsetHighlights(card, intervals, regexes);
+}
+
+function rsHighlightSelectedCardOffsetAtoms(card, intervals, atoms, useNorm) {
+  const regexes = (atoms || []).map(a => rsLiteralRegexForSelected(a, useNorm)).filter(Boolean);
+  return rsApplySelectedOffsetHighlights(card, intervals, regexes);
+}
+
+function rsApplySelectedOffsetHighlights(card, intervals, regexes) {
+  const nodeMap = new Map();
+  const merged = rsMergeIntervals(intervals || []);
+  if (!card || !merged.length || !regexes || !regexes.length) return [];
+  const nodes = rsTextNodesInCard(card);
+  let global = 0;
+  for (const node of nodes) {
+    const txt = node.nodeValue || '';
+    const nodeStart = global, nodeEnd = global + txt.length;
+    const selectedParts = [];
+    for (const it of merged) {
+      const a = Math.max(nodeStart, it.start), b = Math.min(nodeEnd, it.end);
+      if (b > a) selectedParts.push({ start: a - nodeStart, end: b - nodeStart });
+    }
+    global = nodeEnd;
+    if (!selectedParts.length) continue;
+
+    const matches = [];
+    for (const part of selectedParts) {
+      const slice = txt.slice(part.start, part.end);
+      for (const baseRe of regexes) {
+        if (!baseRe) continue;
+        const flags = baseRe.flags.includes('g') ? baseRe.flags : baseRe.flags + 'g';
+        let re;
+        try { re = new RegExp(baseRe.source, flags); } catch(e) { continue; }
+        re.lastIndex = 0;
+        let m;
+        while ((m = re.exec(slice)) !== null) {
+          if (m[0].length === 0) { re.lastIndex++; continue; }
+          matches.push({ start: part.start + m.index, end: part.start + m.index + m[0].length });
+        }
+      }
+    }
+    const mm = rsMergeIntervals(matches);
+    if (mm.length) nodeMap.set(node, mm);
+  }
+  return rsApplySelectedIntervals(nodeMap, 'sh');
+}
+
+function rsHighlightSelectedCard(card, ranges, query, useNorm, useRegex) {
+  const regexes = [];
+  if (useRegex) {
+    const parsed = rsParseRegex(query, useNorm);
+    if (parsed.valid && parsed.re) regexes.push(parsed.re);
+  } else {
+    const re = rsLiteralRegexForSelected(query, useNorm);
+    if (re) regexes.push(re);
+  }
+  return rsApplySelectedIntervals(rsCollectSelectedNodeIntervals(card, ranges, regexes), 'sh');
+}
+
+function rsHighlightSelectedCardAtoms(card, ranges, atoms, useNorm) {
+  const regexes = (atoms || []).map(a => rsLiteralRegexForSelected(a, useNorm)).filter(Boolean);
+  return rsApplySelectedIntervals(rsCollectSelectedNodeIntervals(card, ranges, regexes), 'sh');
+}
+
 /* ══ MAIN SEARCH FUNCTION ═════════════════════════════ */
 function onRightSearch() {
   const inp      = document.getElementById('rightSearchInput');
@@ -3750,11 +4082,15 @@ function onRightSearch() {
   const filter   = document.getElementById('rightFilterChk').checked;
   const general  = document.getElementById('rightGeneralChk').checked;
   const useRegex = document.getElementById('rightRegexChk').checked;
+  const selectedSnap = rsGetRightSelectionSnapshot();
+  const selectedOnlyActive = !!(selectedSnap.enabled && selectedSnap.active);
   const q        = inp.value.trim();
 
   rightSearch.query   = q;
   rightSearch.useNorm = useNorm;
   rightSearch.filter  = filter;
+  rightSearch.selectedOnly = selectedOnlyActive;
+  rightSearch.selectedText = selectedSnap.text || '';
   inp.classList.toggle('has-query', !!q);
 
   // Clear old highlights & visibility
@@ -3771,6 +4107,83 @@ function onRightSearch() {
     updateCountBadge(countEl, 0, null);
     document.getElementById('rightNavPrev').disabled = true;
     document.getElementById('rightNavNext').disabled = true;
+    _refreshOptsDots();
+    return;
+  }
+
+
+  /* ── SELECTED TEXT ONLY SCOPE ────────────────────────
+     Search is limited to the text currently highlighted by the user inside
+     right-panel cards. To avoid corrupting the browser selection, this mode
+     counts matches and filters only the cards whose selected extract matches.
+     If the checkbox is on but no right-panel text is selected, normal search
+     continues exactly as before. */
+  if (selectedOnlyActive) {
+    if (useRegex) {
+      const { re, valid } = rsParseRegex(q, useNorm);
+      if (!valid) {
+        countEl.textContent = 'Regex त्रुटि';
+        countEl.className = 'search-count no-results';
+        _refreshOptsDots();
+        return;
+      }
+      selectedSnap.cardTexts.forEach((txt, cid) => {
+        re.lastIndex = 0;
+        const ok = re.test(txt);
+        re.lastIndex = 0;
+        const card = document.querySelector(`.order-card[data-id="${CSS.escape(cid)}"]`);
+        if (!card) return;
+        if (!ok) {
+          if (filter) card.classList.add('rp-hidden');
+          return;
+        }
+        rightSearch.hits.push(...(selectedSnap.cardOffsets && selectedSnap.cardOffsets.has(cid)
+          ? rsHighlightSelectedCardOffsets(card, selectedSnap.cardOffsets.get(cid), q, useNorm, true)
+          : rsHighlightSelectedCard(card, selectedSnap.ranges, q, useNorm, true)));
+      });
+    } else if (keyword && !general) {
+      const atoms = rsExtractAtoms(q);
+      selectedSnap.cardTexts.forEach((txt, cid) => {
+        const ok = rsSelectedKeywordMatchedText(q, txt, useNorm);
+        const card = document.querySelector(`.order-card[data-id="${CSS.escape(cid)}"]`);
+        if (!card) return;
+        if (!ok) {
+          if (filter) card.classList.add('rp-hidden');
+          return;
+        }
+        const marks = atoms.length
+          ? (selectedSnap.cardOffsets && selectedSnap.cardOffsets.has(cid)
+              ? rsHighlightSelectedCardOffsetAtoms(card, selectedSnap.cardOffsets.get(cid), atoms, useNorm)
+              : rsHighlightSelectedCardAtoms(card, selectedSnap.ranges, atoms, useNorm))
+          : (selectedSnap.cardOffsets && selectedSnap.cardOffsets.has(cid)
+              ? rsHighlightSelectedCardOffsets(card, selectedSnap.cardOffsets.get(cid), q, useNorm, false)
+              : rsHighlightSelectedCard(card, selectedSnap.ranges, q, useNorm, false));
+        rightSearch.hits.push(...marks);
+      });
+    } else {
+      selectedSnap.cardTexts.forEach((txt, cid) => {
+        const n = rsCountLiteralInText(txt, q, useNorm);
+        const card = document.querySelector(`.order-card[data-id="${CSS.escape(cid)}"]`);
+        if (!card) return;
+        if (n === 0) {
+          if (filter) card.classList.add('rp-hidden');
+          return;
+        }
+        rightSearch.hits.push(...(selectedSnap.cardOffsets && selectedSnap.cardOffsets.has(cid)
+          ? rsHighlightSelectedCardOffsets(card, selectedSnap.cardOffsets.get(cid), q, useNorm, false)
+          : rsHighlightSelectedCard(card, selectedSnap.ranges, q, useNorm, false)));
+      });
+    }
+
+    document.querySelectorAll('.order-card[data-id]').forEach(card => {
+      if (!selectedSnap.cardIds.has(card.dataset.id) && filter) card.classList.add('rp-hidden');
+    });
+
+    rightSearch.cur = 0;
+    if (rightSearch.hits.length) setActiveMark(rightSearch.hits, 0);
+    updateCountBadge(countEl, rightSearch.cur, rightSearch.hits.length);
+    document.getElementById('rightNavPrev').disabled = rightSearch.hits.length < 2;
+    document.getElementById('rightNavNext').disabled = rightSearch.hits.length < 2;
     _refreshOptsDots();
     return;
   }
@@ -3879,6 +4292,7 @@ function rightSearchNav(dir) {
 }
 
 function clearRightSearch() {
+  rightSearch.selectedScope = null;
   document.getElementById('rightSearchInput').value = '';
   onRightSearch();
 }
@@ -4059,36 +4473,32 @@ else scheduleInitialLoad();
                 type, subject, court, judge, date, order, recognition } ] }
 ════════════════════════════════════════════ -->
 <!-- Local docs: auto-loaded from DOCS/ by script tags -->
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि  केटा २ पक्ष दान १.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि F दापु.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि F दापु१.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि F दापु३.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि F दापु४.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि F दापु५.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि M दापु एकतर्फी अंशियार कायम.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि M २ तर्फी दान १.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा 2 पक्ष दान २.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु एकतर्फी २०६४ देखि अलग २०६८ मा अंश भरपाई गरिदिएको.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु दुई तर्फी २०६० मा अंशबण्डा वादीको साक्षीको बकपत्रलाई आधार लिइएको.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार गरेकोले.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु सम्बन्ध राम्रो नरहेको र लगाउको अंश मुद्दामा दावी पुग्ने भएकोले.doc"></script>
-<script src="DOCS\सम्बन्ध विच्छेद\०७८-CP-१५८१,सम्बन्ध वि केटा वादी दापु १ तर्फी अंश मुद्दा फैसला भएकोले.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु १ तर्फी केटी बाले बिहे भएको बकपत्र.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु १ तर्फी पहिले पनि सवि मुद्दा दिएको, अंश दावी गरेमा हुने गरी सवि हुने.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध वि केटा वादी दापु २ तर्फी.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद केटा एकतर्फी दावी नपुग्ने.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद केटा एकतर्फी दावी पुग्ने.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद केटा एकतर्फी साक्षी नभएको दावी नपुग्ने.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद केटा दावी पुग्ने.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद १ तर्फी साक्षी अनुपस्तित दावी नपुग्ने.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद.docx"></script>
-<script src="DOCS/सम्बन्ध विच्छेद/०६७-CR-०७२६,सअ, सम्बन्धविच्छेद (केटाले दायर गरेको), दावी नपुग्ने-उल्टी-उल्टी भई सुरू सदर.docx"></script>
+<script src="DOCS/सम्बन्ध वि  केटा २ पक्ष दान १.docx"></script>
+<script src="DOCS/सम्बन्ध वि F दापु.docx"></script>
+<script src="DOCS/सम्बन्ध वि F दापु१.docx"></script>
+<script src="DOCS/सम्बन्ध वि F दापु३.docx"></script>
+<script src="DOCS/सम्बन्ध वि F दापु४.docx"></script>
+<script src="DOCS/सम्बन्ध वि F दापु५.docx"></script>
+<script src="DOCS/सम्बन्ध वि M दापु एकतर्फी अंशियार कायम.docx"></script>
+<script src="DOCS/सम्बन्ध वि M २ तर्फी दान १.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा 2 पक्ष दान २.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु एकतर्फी २०६४ देखि अलग २०६८ मा अंश भरपाई गरिदिएको.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु दुई तर्फी २०६० मा अंशबण्डा वादीको साक्षीको बकपत्रलाई आधार लिइएको.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार गरेकोले.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु प्रतिवादीले अर्को बिहे गरेको स्वीकार.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु सम्बन्ध राम्रो नरहेको र लगाउको अंश मुद्दामा दावी पुग्ने भएकोले.doc"></script>
+<script src="DOCS/०७८-CP-१५८१,सम्बन्ध वि केटा वादी दापु १ तर्फी अंश मुद्दा फैसला भएकोले.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु १ तर्फी केटी बाले बिहे भएको बकपत्र.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु १ तर्फी पहिले पनि सवि मुद्दा दिएको, अंश दावी गरेमा हुने गरी सवि हुने.docx"></script>
+<script src="DOCS/सम्बन्ध वि केटा वादी दापु २ तर्फी.docx"></script>
+<script src="DOCS/सम्बन्ध विच्छेद केटा एकतर्फी दावी नपुग्ने.docx"></script>
+<script src="DOCS/सम्बन्ध विच्छेद केटा एकतर्फी दावी पुग्ने.docx"></script>
+<script src="DOCS/सम्बन्ध विच्छेद केटा एकतर्फी साक्षी नभएको दावी नपुग्ने.docx"></script>
+<script src="DOCS/सम्बन्ध विच्छेद केटा दावी पुग्ने.docx"></script>
+<script src="DOCS/सम्बन्ध विच्छेद १ तर्फी साक्षी अनुपस्तित दावी नपुग्ने.docx"></script>
+<script src="DOCS/सम्बन्ध विच्छेद.docx"></script>
+<script src="DOCS/०६७-CR-०७२६,सअ, सम्बन्धविच्छेद (केटाले दायर गरेको), दावी नपुग्ने-उल्टी-उल्टी भई सुरू सदर.docx"></script>
 <!-- Example external link: <script src="https://example.com/अन्य आदेश.json"></script> -->
-
-
-<!-- Example external link: <script src="https://example.com/अन्य आदेश.json"></script> -->
-
 <!-- ════════════════════ README MODAL ════════════════════ -->
 <div id="readme-overlay" onclick="readmeOverlayClick(event)">
   <div id="readme-modal" role="dialog" aria-modal="true" aria-label="README — प्रयोग निर्देशिका">
