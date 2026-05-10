@@ -1514,7 +1514,7 @@ let resetAllExpanded   = false;
 let totalSourceFiles   = 0;
 
 // LocalStorage cache: parsed JSON is saved per source path so refresh does not re-fetch/re-parse.
-const LOCAL_JSON_CACHE_PREFIX = 'judgementViewer:loadedJson:v5-content-keyword:';
+const LOCAL_JSON_CACHE_PREFIX = 'judgementViewer:loadedJson:v7-read-fallback:';
 if(window.pdfjsLib){
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 }
@@ -1576,8 +1576,42 @@ function _cacheBustUrl(src){
 }
 
 async function fetchSource(src, forceReload=false){
-  const target = forceReload ? _cacheBustUrl(src) : src;
-  return fetch(target, forceReload ? {cache:'reload'} : undefined);
+  /* Robust file reader
+     Why this exists: some local/static servers fail when cache-busting query
+     strings are appended (file.docx?_cache_update=...), and file names may
+     contain spaces or Nepali characters. We try safe alternatives before
+     declaring the file unreadable. */
+  const attempts = [];
+  const pushAttempt = (url, opts) => {
+    if(!url) return;
+    const key = url + '|' + JSON.stringify(opts || {});
+    if(!attempts.some(a => a.key === key)) attempts.push({url, opts, key});
+  };
+
+  if(forceReload){
+    pushAttempt(_cacheBustUrl(src), {cache:'reload'});
+    pushAttempt(src, {cache:'no-store'});
+    pushAttempt(src, {cache:'reload'});
+  }
+  pushAttempt(src, undefined);
+  try { pushAttempt(encodeURI(src), forceReload ? {cache:'no-store'} : undefined); } catch(e) {}
+
+  let lastErr = null;
+  for(const a of attempts){
+    try {
+      const res = await fetch(a.url, a.opts);
+      if(res && res.ok) return res;
+      lastErr = new Error(`HTTP ${res ? res.status : '0'} @ ${a.url}`);
+    } catch(e) {
+      lastErr = e;
+    }
+  }
+
+  const protocol = (location && location.protocol) ? location.protocol : '';
+  if(protocol === 'file:'){
+    throw new Error('Browser ले local file:// बाट linked file पढ्न दिएन। यस HTML लाई local server बाट खोल्नुहोस् वा cached JSON प्रयोग गर्नुहोस्।');
+  }
+  throw lastErr || new Error('फाइल पढ्न सकिएन');
 }
 
 function resetLoadedStateForFreshReload(){
@@ -2048,6 +2082,7 @@ function normalizeLoadedNepaliText(text){
 // CONTENT KEYWORD EXTRACTION
 // Reads explicit file-content directives such as:
 //   :keyword:{सुनसरी जिअ, ०७9-CP-3227, सवि, दापु, प्रतिवादीले अर्को बिहे गरेको स्वीकार}
+//   KEYWORD: { ... }, Keywords:{ ... }, KeyWords : { ... }, keyword : { ... }
 // This intentionally overrides older/metadata keyword fields so KW hover always follows the latest in-document keyword line.
 // ═══════════════════════════════════════════════
 function _cleanKeywordText(value){
@@ -2063,7 +2098,7 @@ function extractKeywordsFromTextBlock(text){
   const src = normalizeLoadedNepaliText(text || '');
   if(!src) return '';
   const found = [];
-  const re = /(?:^|[\s\n\r])[:：]?\s*keyword\s*[:：]\s*\{([\s\S]*?)\}/gi;
+  const re = /(?:^|[\s\n\r])[:：]?\s*keywords?\s*[:：]\s*\{([\s\S]*?)\}/gi;
   let m;
   while((m = re.exec(src)) !== null){
     const kw = _cleanKeywordText(m[1] || '');
@@ -2075,7 +2110,7 @@ function extractKeywordsFromTextBlock(text){
 function extractKeywordDirectives(rawText){
   const src = normalizeLoadedNepaliText(rawText || '');
   const out = [];
-  const re = /(?:^|[\s\n\r])[:：]?\s*keyword\s*[:：]\s*\{([\s\S]*?)\}/gi;
+  const re = /(?:^|[\s\n\r])[:：]?\s*keywords?\s*[:：]\s*\{([\s\S]*?)\}/gi;
   let m;
   while((m = re.exec(src)) !== null){
     const kw = _cleanKeywordText(m[1] || '');
@@ -2224,7 +2259,11 @@ async function loadTxtFile(src, index, total, forceReload=false) {
   let rawText;
   try {
     rawText = await extractTextFromSource(src, filename, forceReload);
-  } catch(e){ updateFileRow(fileId,filename,'error','फेला/पढ्न सकिएन: '+e.message); return; }
+  } catch(e){
+    console.error('File load failed:', src, e);
+    updateFileRow(fileId,filename,'error','फेला/पढ्न सकिएन: '+(e && e.message ? e.message : e));
+    return;
+  }
 
   let parsed,usedAI=false;
   try   { parsed=await parseWithAI(rawText,filename); usedAI=true; }
@@ -2333,7 +2372,11 @@ async function loadJsonFile(src, index, total, forceReload=false) {
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     jsonRawText=await res.text();
     parsed=JSON.parse(jsonRawText);
-  } catch(e){ updateFileRow(fileId,filename,'error','JSON पढ्न सकिएन: '+e.message); return; }
+  } catch(e){
+    console.error('JSON load failed:', src, e);
+    updateFileRow(fileId,filename,'error','JSON पढ्न सकिएन: '+(e && e.message ? e.message : e));
+    return;
+  }
 
   if(!parsed||!Array.isArray(parsed.cases)){
     updateFileRow(fileId,filename,'error','अमान्य JSON संरचना (cases[] चाहिन्छ)');
@@ -4042,6 +4085,7 @@ else scheduleInitialLoad();
 <script src="DOCS/सम्बन्ध विच्छेद/सम्बन्ध विच्छेद.docx"></script>
 <script src="DOCS/सम्बन्ध विच्छेद/०६७-CR-०७२६,सअ, सम्बन्धविच्छेद (केटाले दायर गरेको), दावी नपुग्ने-उल्टी-उल्टी भई सुरू सदर.docx"></script>
 <!-- Example external link: <script src="https://example.com/अन्य आदेश.json"></script> -->
+
 
 <!-- Example external link: <script src="https://example.com/अन्य आदेश.json"></script> -->
 
